@@ -9,27 +9,22 @@
 #include "WaffleTrials.h"
 #include "Widgets/Input/SVirtualJoystick.h"
 
+#include "Camera/CameraActor.h"
+#include "Kismet/GameplayStatics.h"
+
 void AWaffleTrialsPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// only spawn touch controls on local player controllers
-	if (ShouldUseTouchControls() && IsLocalPlayerController())
+	if (IsLocalPlayerController())
 	{
-		// spawn the mobile controls widget
-		MobileControlsWidget = CreateWidget<UUserWidget>(this, MobileControlsWidgetClass);
-
-		if (MobileControlsWidget)
-		{
-			// add the controls to the player screen
-			MobileControlsWidget->AddToPlayerScreen(0);
-
-		} else {
-
-			UE_LOG(LogWaffleTrials, Error, TEXT("Could not spawn mobile controls widget."));
-
+		TArray<AActor*> cameras;
+		UGameplayStatics::GetAllActorsOfClassWithTag(this, ACameraActor::StaticClass(), KitchenCameraTag,
+			cameras);
+		if (cameras.Num() > 0) {
+			SetViewTarget(cameras[0]);
+			SetControlRotation(cameras[0]->GetActorRotation());
 		}
-
 	}
 }
 

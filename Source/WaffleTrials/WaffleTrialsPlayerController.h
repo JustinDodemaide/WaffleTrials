@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "GameFramework/PlayerController.h"
 #include "WaffleTrialsPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -17,6 +15,10 @@ UCLASS(abstract)
 class AWaffleTrialsPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	FName KitchenCameraTag = FName("KitchenCamera");
 	
 protected:
 
