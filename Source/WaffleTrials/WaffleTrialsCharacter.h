@@ -23,10 +23,6 @@ class AWaffleTrialsCharacter : public ACharacter
 	
 protected:
 
-	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, Category="Input")
-	UInputAction* JumpAction;
-
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MoveAction;
@@ -52,14 +48,6 @@ public:
 	/** Handles move inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoMove(float Right, float Forward);
-
-	/** Handles jump pressed inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoJumpStart();
-
-	/** Handles jump pressed inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoJumpEnd();
 
 };
 

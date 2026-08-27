@@ -26,10 +26,6 @@ AWaffleTrialsCharacter::AWaffleTrialsCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 
-	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
-	// instead of recompiling to adjust them
-	GetCharacterMovement()->JumpZVelocity = 500.f;
-	GetCharacterMovement()->AirControl = 0.35f;
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
@@ -55,16 +51,9 @@ void AWaffleTrialsCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AWaffleTrialsCharacter::Move);
 		//EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AWaffleTrialsCharacter::Look);
-
-		// Looking
-		//EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AWaffleTrialsCharacter::Look);
 	}
 	else
 	{
@@ -100,17 +89,4 @@ void AWaffleTrialsCharacter::DoMove(float Right, float Forward)
 		AddMovementInput(ForwardDirection, Forward);
 		AddMovementInput(RightDirection, Right);
 	}
-}
-
-
-void AWaffleTrialsCharacter::DoJumpStart()
-{
-	// signal the character to jump
-	Jump();
-}
-
-void AWaffleTrialsCharacter::DoJumpEnd()
-{
-	// signal the character to stop jumping
-	StopJumping();
 }
