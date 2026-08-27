@@ -12,6 +12,11 @@
 #include "Camera/CameraActor.h"
 #include "Kismet/GameplayStatics.h"
 
+#include "Station.h"
+#include "EngineUtils.h"
+
+#include "EnhancedInputComponent.h"
+
 void AWaffleTrialsPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -52,6 +57,11 @@ void AWaffleTrialsPlayerController::SetupInputComponent()
 				}
 			}
 		}
+		//if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(InputComponent))
+		//{
+		//	EIC->BindAction(UseAction, ETriggerEvent::Started, this,
+		//		&AWaffleTrialsPlayerController::UseStation);
+		//}
 	}
 }
 
@@ -59,4 +69,17 @@ bool AWaffleTrialsPlayerController::ShouldUseTouchControls() const
 {
 	// are we on a mobile platform? Should we force touch?
 	return SVirtualJoystick::ShouldDisplayTouchInterface() || bForceTouchControls;
+}
+
+void AWaffleTrialsPlayerController::UseStation() {
+	for (TActorIterator<AStation> It(GetWorld()); It; ++It) {
+		Server_UseStation(*It);
+		return;
+	}
+}
+
+void AWaffleTrialsPlayerController::Server_UseStation_Implementation(AStation* Station) {
+	if (Station) {
+		Station->Use();
+	}
 }

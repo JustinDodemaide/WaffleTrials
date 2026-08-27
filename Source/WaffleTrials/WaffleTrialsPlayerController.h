@@ -2,10 +2,14 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
+#include "GameFramework/PlayerController.h"
 #include "WaffleTrialsPlayerController.generated.h"
 
 class UInputMappingContext;
 class UUserWidget;
+
+class AStation;
 
 /**
  *  Basic PlayerController class for a third person game
@@ -19,6 +23,9 @@ class AWaffleTrialsPlayerController : public APlayerController
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera")
 	FName KitchenCameraTag = FName("KitchenCamera");
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<class UInputAction> UseAction;
 	
 protected:
 
@@ -51,4 +58,10 @@ protected:
 	/** Returns true if the player should use UMG touch controls */
 	bool ShouldUseTouchControls() const;
 
+
+	UFUNCTION(Exec)
+	void UseStation();
+
+	UFUNCTION(Server, Reliable)
+	void Server_UseStation(AStation* Station);
 };
