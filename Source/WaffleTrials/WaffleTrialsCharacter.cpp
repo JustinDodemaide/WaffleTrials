@@ -61,10 +61,10 @@ void AWaffleTrialsCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AWaffleTrialsCharacter::Move);
-		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AWaffleTrialsCharacter::Look);
+		//EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AWaffleTrialsCharacter::Look);
 
 		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AWaffleTrialsCharacter::Look);
+		//EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AWaffleTrialsCharacter::Look);
 	}
 	else
 	{
@@ -81,14 +81,6 @@ void AWaffleTrialsCharacter::Move(const FInputActionValue& Value)
 	DoMove(MovementVector.X, MovementVector.Y);
 }
 
-void AWaffleTrialsCharacter::Look(const FInputActionValue& Value)
-{
-	// input is a Vector2D
-	FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-	// route the input
-	DoLook(LookAxisVector.X, LookAxisVector.Y);
-}
 
 void AWaffleTrialsCharacter::DoMove(float Right, float Forward)
 {
@@ -110,16 +102,6 @@ void AWaffleTrialsCharacter::DoMove(float Right, float Forward)
 	}
 }
 
-void AWaffleTrialsCharacter::DoLook(float Yaw, float Pitch)
-{
-	return;
-	if (GetController() != nullptr)
-	{
-		// add yaw and pitch input to controller
-		AddControllerYawInput(Yaw);
-		AddControllerPitchInput(Pitch);
-	}
-}
 
 void AWaffleTrialsCharacter::DoJumpStart()
 {
