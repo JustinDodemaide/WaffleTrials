@@ -27,6 +27,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MoveAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> InteractAction;
 
 public:
 
@@ -42,6 +44,7 @@ protected:
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
+	void Interact();
 
 public:
 

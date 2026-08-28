@@ -12,6 +12,8 @@
 #include "InputActionValue.h"
 #include "WaffleTrials.h"
 
+#include "WaffleTrialsPlayerController.h"
+
 AWaffleTrialsCharacter::AWaffleTrialsCharacter()
 {
 	// Set size for collision capsule
@@ -30,20 +32,6 @@ AWaffleTrialsCharacter::AWaffleTrialsCharacter()
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
-
-	// Create a camera boom (pulls in towards the player if there is a collision)
-	//CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	//CameraBoom->SetupAttachment(RootComponent);
-	//CameraBoom->TargetArmLength = 400.0f;
-	//CameraBoom->bUsePawnControlRotation = true;
-
-	// Create a follow camera
-	// FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	// FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-	// FollowCamera->bUsePawnControlRotation = false;
-
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
 void AWaffleTrialsCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -53,7 +41,7 @@ void AWaffleTrialsCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AWaffleTrialsCharacter::Move);
-		//EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AWaffleTrialsCharacter::Look);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AWaffleTrialsCharacter::Interact);
 	}
 	else
 	{
@@ -88,5 +76,16 @@ void AWaffleTrialsCharacter::DoMove(float Right, float Forward)
 		// add movement 
 		AddMovementInput(ForwardDirection, Forward);
 		AddMovementInput(RightDirection, Right);
+	}
+}
+
+void AWaffleTrialsCharacter::Interact()
+{
+	UE_LOG(LogWaffleTrials, Warning, TEXT("Interact pressed"));
+
+	AWaffleTrialsPlayerController* pc = Cast<AWaffleTrialsPlayerController>(GetController());
+	if (pc)
+	{
+		pc->UseStation();
 	}
 }

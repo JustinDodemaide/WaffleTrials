@@ -57,11 +57,6 @@ void AWaffleTrialsPlayerController::SetupInputComponent()
 				}
 			}
 		}
-		//if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(InputComponent))
-		//{
-		//	EIC->BindAction(UseAction, ETriggerEvent::Started, this,
-		//		&AWaffleTrialsPlayerController::UseStation);
-		//}
 	}
 }
 
