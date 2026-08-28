@@ -20,6 +20,8 @@ class AWaffleTrialsPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
+	AWaffleTrialsPlayerController();
+
 	UPROPERTY(EditDefaultsOnly, Category = "Camera")
 	FName KitchenCameraTag = FName("KitchenCamera");
 
@@ -56,6 +58,10 @@ protected:
 
 	/** Returns true if the player should use UMG touch controls */
 	bool ShouldUseTouchControls() const;
+
+	// fixes connected clients not using the fixed camera
+	virtual void AcknowledgePossession(APawn* P) override;
+	void ApplyFixedCamera();
 
 public:
 	UFUNCTION(Server, Reliable)

@@ -17,19 +17,18 @@
 #include "InteractorComponent.h"
 #include "Interactable.h"
 
+AWaffleTrialsPlayerController::AWaffleTrialsPlayerController()
+{
+	bAutoManageActiveCameraTarget = false;
+}
+
 void AWaffleTrialsPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
 	if (IsLocalPlayerController())
 	{
-		TArray<AActor*> cameras;
-		UGameplayStatics::GetAllActorsOfClassWithTag(this, ACameraActor::StaticClass(), KitchenCameraTag,
-			cameras);
-		if (cameras.Num() > 0) {
-			SetViewTarget(cameras[0]);
-			SetControlRotation(cameras[0]->GetActorRotation());
-		}
+		ApplyFixedCamera();
 	}
 }
 
@@ -93,4 +92,20 @@ void AWaffleTrialsPlayerController::Server_Interact_Implementation(AActor* Targe
 	}
 
 	Cast<IInteractable>(Target)->Interact(MyPawn);
+}
+
+void AWaffleTrialsPlayerController::AcknowledgePossession(APawn* P)
+{
+	Super::AcknowledgePossession(P);
+	ApplyFixedCamera();
+}
+
+void AWaffleTrialsPlayerController::ApplyFixedCamera() {
+	TArray<AActor*> cameras;
+	UGameplayStatics::GetAllActorsOfClassWithTag(this, ACameraActor::StaticClass(), KitchenCameraTag,
+		cameras);
+	if (cameras.Num() > 0) {
+		SetViewTarget(cameras[0]);
+		SetControlRotation(cameras[0]->GetActorRotation());
+	}
 }
