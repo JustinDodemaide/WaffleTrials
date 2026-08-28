@@ -17,7 +17,7 @@ AStation::AStation()
 	CountText->SetHorizontalAlignment(EHTA_Center);
 	CountText->SetWorldSize(80.f);
 	CountText->SetupAttachment(Mesh);
-	CountText->SetRelativeLocation(FVector(0.f, 0.f, 100.f));
+	CountText->SetRelativeLocation(FVector(0.f, 0.f, 200.f));
 }
 
 void AStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -27,7 +27,7 @@ void AStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 	DOREPLIFETIME(AStation, Count);
 }
 
-void AStation::Use()
+void AStation::Interact(APawn* Interactor)
 {
 	if (!HasAuthority())
 	{
@@ -35,12 +35,19 @@ void AStation::Use()
 	}
 
 	Count++;
+	UpdateCount();
+}
+
+void AStation::OnRep_Count() {
+	UpdateCount();
+}
+
+void AStation::UpdateCount() {
 	CountText->SetText(FText::AsNumber(Count));
 }
 
-void AStation::OnRep_Use()
-{
-	CountText->SetText(FText::AsNumber(Count));
+void AStation::Targeted(bool targeted) {
+	SetHighlight(targeted);
 }
 
 void AStation::SetHighlight(bool highlight) {

@@ -13,9 +13,12 @@
 #include "WaffleTrials.h"
 
 #include "WaffleTrialsPlayerController.h"
+#include "InteractorComponent.h"
 
 AWaffleTrialsCharacter::AWaffleTrialsCharacter()
 {
+	Interactor = CreateDefaultSubobject<UInteractorComponent>(TEXT("Interactor"));
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 		
@@ -86,6 +89,6 @@ void AWaffleTrialsCharacter::Interact()
 	AWaffleTrialsPlayerController* pc = Cast<AWaffleTrialsPlayerController>(GetController());
 	if (pc)
 	{
-		pc->UseStation();
+		pc->TryInteract();
 	}
 }

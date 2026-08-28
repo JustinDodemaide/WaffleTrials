@@ -52,5 +52,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoMove(float Right, float Forward);
 
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	TObjectPtr<class UInteractorComponent> Interactor;
+
 };
 

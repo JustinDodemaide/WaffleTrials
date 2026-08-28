@@ -12,10 +12,10 @@
 #include "Camera/CameraActor.h"
 #include "Kismet/GameplayStatics.h"
 
-#include "Station.h"
-#include "EngineUtils.h"
-
 #include "EnhancedInputComponent.h"
+
+#include "InteractorComponent.h"
+#include "Interactable.h"
 
 void AWaffleTrialsPlayerController::BeginPlay()
 {
@@ -66,15 +66,31 @@ bool AWaffleTrialsPlayerController::ShouldUseTouchControls() const
 	return SVirtualJoystick::ShouldDisplayTouchInterface() || bForceTouchControls;
 }
 
-void AWaffleTrialsPlayerController::UseStation() {
-	for (TActorIterator<AStation> It(GetWorld()); It; ++It) {
-		Server_UseStation(*It);
-		return;
+void AWaffleTrialsPlayerController::TryInteract() {
+	APawn* MyPawn = GetPawn();
+	if (!MyPawn) { return; }
+
+	if (UInteractorComponent* Interactor = MyPawn->FindComponentByClass<UInteractorComponent>())
+	{
+		if (AActor* Target = Cast<AActor>(Interactor->GetCurrentInteractable().GetObject()))
+		{
+			Server_Interact(Target);
+		}
 	}
 }
 
-void AWaffleTrialsPlayerController::Server_UseStation_Implementation(AStation* Station) {
-	if (Station) {
-		Station->Use();
+void AWaffleTrialsPlayerController::Server_Interact_Implementation(AActor* Target) {
+	APawn* MyPawn = GetPawn();
+	if (!Target || !MyPawn || !Target->Implements<UInteractable>())
+	{
+		return;
 	}
+
+	if (FVector::DistSquared(MyPawn->GetActorLocation(), Target->GetActorLocation())
+		> FMath::Square(300.f))
+	{
+		return;
+	}
+
+	Cast<IInteractable>(Target)->Interact(MyPawn);
 }

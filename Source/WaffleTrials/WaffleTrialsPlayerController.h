@@ -9,7 +9,6 @@
 class UInputMappingContext;
 class UUserWidget;
 
-class AStation;
 
 /**
  *  Basic PlayerController class for a third person game
@@ -59,9 +58,8 @@ protected:
 	bool ShouldUseTouchControls() const;
 
 public:
-	UFUNCTION(Exec)
-	void UseStation();
-
 	UFUNCTION(Server, Reliable)
-	void Server_UseStation(AStation* Station);
+	void Server_Interact(AActor* Target);
+
+	void TryInteract();
 };
