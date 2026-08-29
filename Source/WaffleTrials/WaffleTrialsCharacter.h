@@ -67,5 +67,6 @@ protected:
 
 public:
 	void SetHeldItem(EItem item);
+	EItem GetHeldItem();
 };
 

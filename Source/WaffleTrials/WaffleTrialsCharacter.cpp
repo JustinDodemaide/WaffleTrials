@@ -114,3 +114,7 @@ void AWaffleTrialsCharacter::SetHeldItem(EItem item) {
 	FItemData* ItemInfo = GameInstance->ItemDataTable->FindRow<FItemData>(rowName, "looking up sprite");
 	CarriedItemSprite->SetSprite(ItemInfo->sprite);
 }
+
+EItem AWaffleTrialsCharacter::GetHeldItem() {
+	return HeldItem;
+}
