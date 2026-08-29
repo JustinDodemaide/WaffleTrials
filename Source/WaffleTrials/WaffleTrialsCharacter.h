@@ -39,6 +39,8 @@ public:
 	/** Constructor */
 	AWaffleTrialsCharacter();	
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 protected:
 
 	/** Initialize input action bindings */
@@ -61,12 +63,22 @@ public:
 
 	// Item carrying
 protected:
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UPaperSpriteComponent> CarriedItemSprite;
 
+	UPROPERTY(ReplicatedUsing = OnRep_HeldItem)
 	EItem HeldItem = EItem::None;
 
-public:
-	void SetHeldItem(EItem item);
-	EItem GetHeldItem();
-};
+	UFUNCTION()
+	void OnRep_HeldItem();
 
+	/** Applies HeldItem to the sprite component. Runs on every machine. */
+	void UpdateCarriedItemSprite();
+
+public:
+
+	/** Server only. Clients calling this will be ignored. */
+	void SetHeldItem(EItem item);
+	EItem GetHeldItem() const;
+};
