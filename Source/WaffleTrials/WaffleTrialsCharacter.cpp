@@ -96,14 +96,6 @@ void AWaffleTrialsCharacter::DoMove(float Right, float Forward)
 
 void AWaffleTrialsCharacter::Interact()
 {
-	// please remember to remove this
-	UWGameInstance* GameInstance = Cast<UWGameInstance>(UGameplayStatics::GetGameInstance(this));
-	FString itemName = UEnum::GetDisplayValueAsText(EItem::Bagel).ToString();
-	FName rowName = FName(*itemName);
-	FItemData* ItemInfo = GameInstance->ItemDataTable->FindRow<FItemData>(rowName, "looking up sprite");
-	CarriedItemSprite->SetSprite(ItemInfo->sprite);
-
-
 	UE_LOG(LogWaffleTrials, Warning, TEXT("Interact pressed"));
 
 	AWaffleTrialsPlayerController* pc = Cast<AWaffleTrialsPlayerController>(GetController());
@@ -116,5 +108,9 @@ void AWaffleTrialsCharacter::Interact()
 void AWaffleTrialsCharacter::SetHeldItem(EItem item) {
 	HeldItem = item;
 
-	// change sprite
+	UWGameInstance* GameInstance = Cast<UWGameInstance>(UGameplayStatics::GetGameInstance(this));
+	FString itemName = UEnum::GetDisplayValueAsText(item).ToString();
+	FName rowName = FName(*itemName);
+	FItemData* ItemInfo = GameInstance->ItemDataTable->FindRow<FItemData>(rowName, "looking up sprite");
+	CarriedItemSprite->SetSprite(ItemInfo->sprite);
 }
