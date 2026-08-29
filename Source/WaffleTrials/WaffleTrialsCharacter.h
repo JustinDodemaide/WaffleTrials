@@ -5,10 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "ItemType.h"
 #include "WaffleTrialsCharacter.generated.h"
 
 class UInputAction;
 struct FInputActionValue;
+
+class UPaperSpriteComponent;
+class UPaperSprite;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
@@ -55,5 +59,15 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<class UInteractorComponent> Interactor;
 
+	// Item carrying
+protected:
+	TObjectPtr<UPaperSpriteComponent> CarriedItemSprite;
+
+	EItem HeldItem = EItem::None;
+
+public:
+	void SetHeldItem(EItem item);
+
+	// Carried item sprite
 };
 

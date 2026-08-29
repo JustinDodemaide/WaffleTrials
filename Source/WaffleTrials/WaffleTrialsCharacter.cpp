@@ -92,3 +92,9 @@ void AWaffleTrialsCharacter::Interact()
 		pc->TryInteract();
 	}
 }
+
+void AWaffleTrialsCharacter::SetHeldItem(EItem item) {
+	HeldItem = item;
+
+	// change sprite
+}
