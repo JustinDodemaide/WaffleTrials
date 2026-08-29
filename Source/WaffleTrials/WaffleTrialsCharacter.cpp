@@ -12,8 +12,14 @@
 #include "InputActionValue.h"
 #include "WaffleTrials.h"
 
+#include "PaperSpriteComponent.h"
+#include "PaperSprite.h"
+
 #include "WaffleTrialsPlayerController.h"
 #include "InteractorComponent.h"
+
+#include "Kismet/GameplayStatics.h"
+#include "WGameInstance.h"
 
 AWaffleTrialsCharacter::AWaffleTrialsCharacter()
 {
@@ -35,6 +41,12 @@ AWaffleTrialsCharacter::AWaffleTrialsCharacter()
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
+
+	CarriedItemSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("CarriedItemSprite"));
+	CarriedItemSprite->SetupAttachment(RootComponent);
+	CarriedItemSprite->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CarriedItemSprite->SetRelativeLocation(FVector(60.0f, 0.0f, 20.0f));
+	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 }
 
 void AWaffleTrialsCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -84,6 +96,14 @@ void AWaffleTrialsCharacter::DoMove(float Right, float Forward)
 
 void AWaffleTrialsCharacter::Interact()
 {
+	// please remember to remove this
+	UWGameInstance* GameInstance = Cast<UWGameInstance>(UGameplayStatics::GetGameInstance(this));
+	FString itemName = UEnum::GetDisplayValueAsText(EItem::Bagel).ToString();
+	FName rowName = FName(*itemName);
+	FItemData* ItemInfo = GameInstance->ItemDataTable->FindRow<FItemData>(rowName, "looking up sprite");
+	CarriedItemSprite->SetSprite(ItemInfo->sprite);
+
+
 	UE_LOG(LogWaffleTrials, Warning, TEXT("Interact pressed"));
 
 	AWaffleTrialsPlayerController* pc = Cast<AWaffleTrialsPlayerController>(GetController());
