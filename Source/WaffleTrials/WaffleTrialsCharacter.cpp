@@ -108,6 +108,11 @@ void AWaffleTrialsCharacter::Interact()
 void AWaffleTrialsCharacter::SetHeldItem(EItem item) {
 	HeldItem = item;
 
+	if (item == EItem::None) {
+		CarriedItemSprite->SetSprite(NULL);
+		return;
+	}
+
 	UWGameInstance* GameInstance = Cast<UWGameInstance>(UGameplayStatics::GetGameInstance(this));
 	FString itemName = UEnum::GetDisplayValueAsText(item).ToString();
 	FName rowName = FName(*itemName);
