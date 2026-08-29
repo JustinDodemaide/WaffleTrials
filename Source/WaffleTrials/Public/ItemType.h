@@ -9,3 +9,12 @@ enum class EItem : uint8
 	None			UMETA(DisplayName = "None"),
 	Bagel			UMETA(DisplayName = "Bagel"),
 };
+
+USTRUCT(BlueprintType)
+struct FItemData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Data")
+	TObjectPtr<class UPaperSprite> sprite;
+};
