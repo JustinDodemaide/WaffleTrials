@@ -67,7 +67,5 @@ protected:
 
 public:
 	void SetHeldItem(EItem item);
-
-	// Carried item sprite
 };
 
