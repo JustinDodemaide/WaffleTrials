@@ -29,7 +29,7 @@ protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
-	TObjectPtr<UStaticMeshComponent> Mesh;
+	TObjectPtr<USkeletalMeshComponent> Mesh;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UTextRenderComponent> CountText;
@@ -37,4 +37,6 @@ protected:
 	void SetHighlight(bool highlighted);
 
 	void UpdateCount();
+
+
 };

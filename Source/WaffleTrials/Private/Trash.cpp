@@ -15,5 +15,12 @@ void ATrash::Interact(APawn* Interactor) {
 	if (player)
 	{
 		player->SetHeldItem(EItem::None);
+		MulticastPlayAnim();
+
+		Mesh->PlayAnimation(anim, false);
 	}
+}
+
+void ATrash::MulticastPlayAnim_Implementation(){
+	Mesh->PlayAnimation(anim, false);
 }

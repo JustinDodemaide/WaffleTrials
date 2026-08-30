@@ -16,4 +16,11 @@ class WAFFLETRIALS_API ATrash : public AStation
 	
 public:
 	virtual void Interact(APawn* Interactor) override;
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UAnimSequence> anim;
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastPlayAnim();
 };

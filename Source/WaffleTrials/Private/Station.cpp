@@ -9,7 +9,7 @@ AStation::AStation()
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
 
 	CountText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("CountText"));
