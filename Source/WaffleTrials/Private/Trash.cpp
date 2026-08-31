@@ -5,15 +5,20 @@
 #include "WaffleTrialsCharacter.h"
 
 void ATrash::Interact(APawn* Interactor) {
-	if (!HasAuthority())
+	// Super::Interact(Interactor);
+
+	if (!HasAuthority()) {
 		return;
+	}
 
 	AWaffleTrialsCharacter* player = Cast<AWaffleTrialsCharacter>(Interactor);
-	if (!player)
-		return;
-	
-	player->SetHeldItem(EItem::None);
-	MulticastPlayAnim();
+	if (player)
+	{
+		player->SetHeldItem(EItem::None);
+		MulticastPlayAnim();
+
+		Mesh->PlayAnimation(anim, false);
+	}
 }
 
 void ATrash::MulticastPlayAnim_Implementation(){
