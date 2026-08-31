@@ -116,7 +116,6 @@ void AWaffleTrialsCharacter::SetHeldItem(EItem item){
 
 	HeldItem = item;
 
-	// OnRep_HeldItem does not fire on the server, so apply it here too.
 	UpdateCarriedItemSprite();
 }
 
