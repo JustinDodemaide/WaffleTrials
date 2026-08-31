@@ -46,6 +46,7 @@ void AGrill::Interact(APawn* Interactor)
     case EGrillState::Empty:
         // if player has raw ingredients, start cooking
         if (player->GetHeldItem() != EItem::RawBEC) return;
+        player->SetHeldItem(EItem::None);
         state = EGrillState::Cooking;
         updateVisuals();
         GetWorldTimerManager().SetTimer(timer, this, &AGrill::timeout, 5.0f, false);
@@ -55,7 +56,7 @@ void AGrill::Interact(APawn* Interactor)
         // let them take the prepped BEC, set to empty
         if (player->GetHeldItem() != EItem::None) return;
         GetWorldTimerManager().ClearTimer(timer);
-        player->SetHeldItem(EItem::PreppedBEC);
+        player->SetHeldItem(EItem::CookedBEC);
         state = EGrillState::Empty;
         updateVisuals();
         break;
@@ -93,11 +94,13 @@ void AGrill::timeout()
 void AGrill::updateVisuals() {
     switch (state) {
     case EGrillState::Empty:
-        spriteComponent->SetVisibility(false);
+       spriteComponent->SetVisibility(false);
         break;
     case EGrillState::Cooking:
+        Mesh->SetAnimation(anim);
+        Mesh->Play(false);
         spriteComponent->SetSprite(cookingSprite);
-        spriteComponent->SetVisibility(false); // just in case
+        spriteComponent->SetVisibility(true); // just in case
         break;
     case EGrillState::Done:
         spriteComponent->SetSprite(doneSprite);
