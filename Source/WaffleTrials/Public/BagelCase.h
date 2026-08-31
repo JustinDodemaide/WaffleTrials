@@ -16,4 +16,11 @@ class WAFFLETRIALS_API ABagelCase : public AStation
 	
 public:
 	virtual void Interact(APawn* Interactor) override;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UAnimSequence> anim;
+
+protected:
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastPlayAnim();
 };

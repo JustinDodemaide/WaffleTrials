@@ -5,18 +5,19 @@
 #include "WaffleTrialsCharacter.h"
 
 void ABagelCase::Interact(APawn* Interactor) {
-	// Super::Interact(Interactor);
-
-	if (!HasAuthority()) {
+	if (!HasAuthority())
 		return;
-	}
 
 	AWaffleTrialsCharacter* player = Cast<AWaffleTrialsCharacter>(Interactor);
-	if (player)
-	{
-		if (player->GetHeldItem() != EItem::None)
-			return;
+	if (!player)
+		return;
 
-		player->SetHeldItem(EItem::Bagel);
-	}
+	if (player->GetHeldItem() != EItem::CookedBEC) return;
+
+	player->SetHeldItem(EItem::PreppedBEC);
+	MulticastPlayAnim();
+}
+
+void ABagelCase::MulticastPlayAnim_Implementation() {
+	Mesh->PlayAnimation(anim, false);
 }

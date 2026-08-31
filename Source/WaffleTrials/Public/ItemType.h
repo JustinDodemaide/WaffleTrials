@@ -11,7 +11,9 @@ enum class EItem : uint8
 	Waffle			UMETA(DisplayName = "Waffle"),
 	Rubbish			UMETA(DisplayName = "Rubbish"),
 	Coffee			UMETA(DisplayName = "Coffee"),
-	//Bagel			UMETA(DisplayName = "Bagel"),
+	RawBEC			UMETA(DisplayName = "RawBEC"),
+	CookedBEC		UMETA(DisplayName = "CookedBEC"),
+	PreppedBEC		UMETA(DisplayName = "PreppedBEC"),
 };
 
 USTRUCT(BlueprintType)
