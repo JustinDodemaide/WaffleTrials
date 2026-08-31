@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Station.h"
-#include "ItemType.h"
+#include "PaperSpriteComponent.h"
 #include "WaffleMaker.generated.h"
 
 UENUM(BlueprintType)
-enum class EState : uint8 {
-	Empty	UMETA(DisplayName = "Empty"),
-	Cooking	UMETA(DisplayName = "Cooking"),
-	Done	UMETA(DisplayName = "Done"),
-	Burnt	UMETA(DisplayName = "Burnt")
+enum class EWaffleMakerState : uint8{
+	Empty,
+	Cooking,
+	Done,
+	Burnt
 };
 
 UCLASS()
@@ -21,53 +21,38 @@ class WAFFLETRIALS_API AWaffleMaker : public AStation
 	GENERATED_BODY()
 
 public:
-	AWaffleMaker();
-
-	virtual void Interact(APawn* Interactor) override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-	UFUNCTION(BlueprintPure, Category = "Waffle Maker")
-	EState GetState() const { return State; }
-
-protected:
-	UPROPERTY(EditAnywhere, Category = "Animation")
-	TObjectPtr<UAnimSequence> CookingAnim;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Waffle Maker")
-	float CookTime = 3.0f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Waffle Maker")
-	float BurnTime = 3.0f;
-
-	UPROPERTY(ReplicatedUsing = OnRep_State, VisibleInstanceOnly, BlueprintReadOnly, Category = "Waffle Maker")
-	EState State = EState::Empty;
-
-	UFUNCTION()
-	void OnRep_State();
-
-	void SetState(EState NewState);
-
-	void UpdateVisuals();
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "Waffle Maker")
-	void OnStateChanged(EState NewState);
-
-	bool TryGiveItem(APawn* Interactor, EItem Item);
-
-	void FinishCooking();
-	void BurnWaffle();
-
-	FTimerHandle CookTimerHandle;
-
-	void SetOpen(bool bOpen, bool bInstant = false);
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 	virtual void BeginPlay() override;
 
-	bool bIsOpen = false;
+	AWaffleMaker();
 
-	void RefreshCountdown();
-	void UpdateCountText();
+protected:
+	FTimerHandle timer;
+	void timeout();
 
-	FTimerHandle CountTextTimerHandle;
-	float CountEndTime = 0.0f;
+	UPROPERTY(ReplicatedUsing = stateChanged)
+	EWaffleMakerState state = EWaffleMakerState::Empty;
+
+	UFUNCTION()
+	void stateChanged();
+
+	void updateVisuals();
+
+	virtual void Interact(APawn* Interactor) override;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> spriteComponent;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UPaperSprite> burntSprite;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UPaperSprite> doneSprite;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UAnimSequence> anim;
+
+	//bool open;
+	void setOpen(bool open);
 };
