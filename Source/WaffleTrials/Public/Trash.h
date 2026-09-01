@@ -9,15 +9,35 @@
 /**
  * 
  */
+
+UENUM(BlueprintType)
+enum class ETrashState : uint8 {
+	Ready,
+	CoolingDown
+};
+
 UCLASS()
 class WAFFLETRIALS_API ATrash : public AStation
 {
 	GENERATED_BODY()
 	
 public:
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+
 	virtual void Interact(APawn* Interactor) override;
 
+	ATrash();
+
 protected:
+	FTimerHandle timer;
+	void timeout();
+
+	UPROPERTY(ReplicatedUsing = stateChanged)
+	ETrashState state = ETrashState::Ready;
+
+	UFUNCTION()
+	void stateChanged();
+
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UAnimSequence> anim;
 
