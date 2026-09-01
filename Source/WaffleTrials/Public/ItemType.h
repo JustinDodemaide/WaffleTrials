@@ -14,6 +14,7 @@ enum class EItem : uint8
 	RawBEC			UMETA(DisplayName = "RawBEC"),
 	CookedBEC		UMETA(DisplayName = "CookedBEC"),
 	PreppedBEC		UMETA(DisplayName = "PreppedBEC"),
+	Donut			UMETA(DisplayName = "Donut"),
 };
 
 USTRUCT(BlueprintType)

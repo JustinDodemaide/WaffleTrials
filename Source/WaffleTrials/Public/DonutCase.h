@@ -1,0 +1,26 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Station.h"
+#include "DonutCase.generated.h"
+
+/**
+ *
+ */
+UCLASS()
+class WAFFLETRIALS_API ADonutCase : public AStation
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Interact(APawn* Interactor) override;
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UAnimSequence> anim;
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastPlayAnim();
+};
