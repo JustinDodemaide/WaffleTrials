@@ -47,7 +47,7 @@ AWaffleTrialsCharacter::AWaffleTrialsCharacter()
 	CarriedItemSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("CarriedItemSprite"));
 	CarriedItemSprite->SetupAttachment(RootComponent);
 	CarriedItemSprite->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CarriedItemSprite->SetRelativeLocation(FVector(60.0f, 0.0f, 20.0f));
+	CarriedItemSprite->SetRelativeLocation(FVector(30.0f, 0.0f, 10.0f));
 }
 
 void AWaffleTrialsCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{

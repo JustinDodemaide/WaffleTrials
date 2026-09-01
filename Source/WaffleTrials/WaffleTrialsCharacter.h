@@ -73,12 +73,10 @@ protected:
 	UFUNCTION()
 	void OnRep_HeldItem();
 
-	/** Applies HeldItem to the sprite component. Runs on every machine. */
 	void UpdateCarriedItemSprite();
 
 public:
 
-	/** Server only. Clients calling this will be ignored. */
 	void SetHeldItem(EItem item);
 	EItem GetHeldItem() const;
 };
