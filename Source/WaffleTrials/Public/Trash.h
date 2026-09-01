@@ -6,8 +6,10 @@
 #include "Station.h"
 #include "Trash.generated.h"
 
+class UBillboardComponent;
+
 /**
- * 
+ *
  */
 
 UENUM(BlueprintType)
@@ -20,15 +22,17 @@ UCLASS()
 class WAFFLETRIALS_API ATrash : public AStation
 {
 	GENERATED_BODY()
-	
+
 public:
-	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void Interact(APawn* Interactor) override;
 
 	ATrash();
 
 protected:
+	virtual void BeginPlay() override;
+
 	FTimerHandle timer;
 	void timeout();
 
@@ -37,6 +41,11 @@ protected:
 
 	UFUNCTION()
 	void stateChanged();
+
+	void UpdateSprite();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Trash")
+	TObjectPtr<UBillboardComponent> cooldownSprite;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UAnimSequence> anim;
