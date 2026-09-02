@@ -23,6 +23,8 @@ public:
 	// called by gamestate
 	void onOrderCompleted(int32 slotIndex);
 
+	void resetOrderTimer(int32 slotIndex, float newTime);
+
 protected:
 	virtual void BeginPlay() override;
 	// dont want the customer to ask for raw eggs so we need a list of valid items

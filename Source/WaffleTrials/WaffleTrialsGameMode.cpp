@@ -130,3 +130,11 @@ void AWaffleTrialsGameMode::onGameOver(){
 		GetWorldTimerManager().ClearTimer(handle);
 	}
 }
+
+void AWaffleTrialsGameMode::resetOrderTimer(int32 slotIndex, float newTime) {
+	if (!slotTimers.IsValidIndex(slotIndex)) return;
+
+	FTimerDelegate del = FTimerDelegate::CreateUObject(
+		this, &AWaffleTrialsGameMode::onOrderTimeLimitReached, slotIndex);
+	GetWorldTimerManager().SetTimer(slotTimers[slotIndex], del, newTime, false);
+}

@@ -46,6 +46,21 @@ bool AWaffleTrialsGameState::attemptSubmitItem(int32 slotIndex, EItem Item){
 				gm->onOrderCompleted(slotIndex);
 			}
 		}
+		// the logic for resetting the timer (round up to the nearest half)
+		else{
+			const float now = GetServerWorldTimeSeconds();
+			const float duration = Order.timeLimit - Order.startTime;
+			const float progress = FMath::Clamp((Order.timeLimit - now) / duration, 0.f, 1.f);
+
+			const float newProgress = FMath::CeilToFloat(progress * 2.f) / 2.f;
+			const float newRemaining = duration * newProgress;
+
+			Order.startTime = now - (duration - newRemaining);
+			Order.timeLimit = now + newRemaining;
+
+			if (AWaffleTrialsGameMode* gm = GetWorld()->GetAuthGameMode<AWaffleTrialsGameMode>())
+				gm->resetOrderTimer(slotIndex, newRemaining);
+		}
 
 		onOrdersChanged.Broadcast();
 		return true;
