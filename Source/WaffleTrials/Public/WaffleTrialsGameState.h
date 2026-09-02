@@ -31,6 +31,11 @@ struct FOrder{
 	UPROPERTY()
 	int32 orderId = -1;
 
+	// if we record start time, we can use GetServerWorldTimeSeconds - startTime to get a timeRemaining
+	// without needing to replicate any other values
+	UPROPERTY()
+	float startTime = 0.f;
+
 	UPROPERTY()
 	float timeLimit = 0.f;
 
@@ -81,6 +86,8 @@ public:
 
 	// gamemode sets the order slots, not this class
 	void setOrder(int32 slotIndex, const FOrder& newOrder);
+
+	float getTimeRemaining(int32 slotIndex) const;
 
 protected:
 	// --- life section start ---

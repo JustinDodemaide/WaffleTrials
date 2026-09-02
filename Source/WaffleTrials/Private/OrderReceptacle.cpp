@@ -22,6 +22,9 @@ AOrderReceptacle::AOrderReceptacle(){
 	sprite2->SetupAttachment(spriteRoot);
 	sprite3 = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("sprite3"));
 	sprite3->SetupAttachment(spriteRoot);
+
+	progressBar = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("progressBar"));
+	progressBar->SetupAttachment(spriteRoot);
 }
 
 void AOrderReceptacle::BeginPlay(){
@@ -39,6 +42,20 @@ void AOrderReceptacle::BeginPlay(){
 	ordersChangedHandle = gameState->onOrdersChanged.AddUObject(this, &AOrderReceptacle::updateVisuals);
 
 	updateVisuals();
+}
+
+void AOrderReceptacle::Tick(float DeltaTime){
+	Super::Tick(DeltaTime);
+
+	AWaffleTrialsGameState* gameState = GetWorld()->GetGameState<AWaffleTrialsGameState>();
+	if (!gameState || gameState->isGameOver()){
+		progressBar->SetVisibility(false);
+		return;
+	}
+
+	const float progress = gameState->getTimeRemaining(orderSlotID);
+	progressBar->SetVisibility(progress > 0.f);
+	progressBar->SetRelativeScale3D(FVector(progress, 0.1f, 0.25f) * 5);
 }
 
 void AOrderReceptacle::updateVisuals()
@@ -83,7 +100,7 @@ void AOrderReceptacle::hideSprites(){
 }
 
 void AOrderReceptacle::Interact(APawn* Interactor){
-	UE_LOG(LogWaffleTrials, Warning, TEXT("FFFFFFFFFFFFFFFFFFFFFFFFFFFFF"));
+	//UE_LOG(LogWaffleTrials, Warning, TEXT("FFFFFFFFFFFFFFFFFFFFFFFFFFFFF"));
 	if (!HasAuthority()) return;
 
 	AWaffleTrialsCharacter* player = Cast<AWaffleTrialsCharacter>(Interactor);
@@ -98,21 +115,24 @@ void AOrderReceptacle::Interact(APawn* Interactor){
 	if (!gameState)
 		return;
 
-	UE_LOG(LogWaffleTrials, Warning, TEXT("HHHHHHHHHHHHHHHHHHHHHHHHHHHH"));
+	//UE_LOG(LogWaffleTrials, Warning, TEXT("HHHHHHHHHHHHHHHHHHHHHHHHHHHH"));
 	if (gameState->attemptSubmitItem(orderSlotID, playerItem)) {
 		player->SetHeldItem(EItem::None);
-		UE_LOG(LogWaffleTrials, Warning, TEXT("XXXXXXXXXXXXXXXXXXXX"));
+		//UE_LOG(LogWaffleTrials, Warning, TEXT("XXXXXXXXXXXXXXXXXXXX"));
 
 	}
 
-	UE_LOG(LogWaffleTrials, Warning, TEXT("GGGGGGGGGGGGGGGGG"));
+	//UE_LOG(LogWaffleTrials, Warning, TEXT("GGGGGGGGGGGGGGGGG"));
 }
 
 // need to manually unsubscribe from the "signal" when this object gets deallocated
 void AOrderReceptacle::EndPlay(const EEndPlayReason::Type EndPlayReason) {
-	Super::EndPlay(EndPlayReason);
 	AWaffleTrialsGameState* gameState = GetWorld()->GetGameState<AWaffleTrialsGameState>();
 	if (!gameState)
 		return;
 	gameState->onOrdersChanged.Remove(ordersChangedHandle);
+
+	progressBar->SetVisibility(false);
+
+	Super::EndPlay(EndPlayReason);
 }

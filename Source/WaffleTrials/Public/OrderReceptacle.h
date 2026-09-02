@@ -19,7 +19,7 @@ public:
 
 	virtual void Interact(APawn* Interactor) override;
 	virtual void BeginPlay() override;
-
+	virtual void Tick(float DeltaTime) override;
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
@@ -48,4 +48,7 @@ protected:
 	void hideSprites();
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UStaticMeshComponent> progressBar;
 };

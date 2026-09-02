@@ -98,6 +98,7 @@ void AWaffleTrialsGameMode::spawnOrder(int32 slotIndex){
 		total += itemSeconds.FindRef(orderItem.item);
 
 	newOrder.timeLimit = gameState->GetServerWorldTimeSeconds() + total;
+	newOrder.startTime = gameState->GetServerWorldTimeSeconds();
 
 	FTimerDelegate del = FTimerDelegate::CreateUObject(
 		this, &AWaffleTrialsGameMode::onOrderTimeLimitReached, slotIndex);

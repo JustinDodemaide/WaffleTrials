@@ -7,7 +7,7 @@
 
 void AWaffleTrialsGameState::BeginPlay(){
 	Super::BeginPlay();
-	if (!HasAuthority)
+	if (!HasAuthority())
 		return;
 
 	currentLives = startingLives;
@@ -114,4 +114,20 @@ void AWaffleTrialsGameState::OnRep_Lives(){
 
 void AWaffleTrialsGameState::OnRep_GameOver(){
 	onGameOver.Broadcast();
+}
+
+float AWaffleTrialsGameState::getTimeRemaining(int32 slotIndex) const{
+	if (!orders.IsValidIndex(slotIndex))
+		return 0.f;
+
+	const FOrder& order = orders[slotIndex];
+	if (!order.active())
+		return 0.f;
+
+	const float duration = order.timeLimit - order.startTime;
+	if (duration <= 0.f)
+		return 0.f;
+
+	const float remaining = order.timeLimit - GetServerWorldTimeSeconds();
+	return FMath::Clamp(remaining / duration, 0.f, 1.f);
 }
