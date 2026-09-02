@@ -1,0 +1,46 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "PaperSpriteComponent.h"
+#include "Interactable.h"
+#include "OrderReceptacle.generated.h"
+
+
+// add the sprites in a row, check
+// the rest of the fucking owl
+// 
+
+UCLASS()
+class WAFFLETRIALS_API AOrderReceptacle : public AActor, public IInteractable
+{
+	GENERATED_BODY()
+	
+public:	
+	AOrderReceptacle();
+
+	virtual void Interact(APawn* Interactor) override;
+	virtual void BeginPlay() override;
+
+
+protected:
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	TObjectPtr<UStaticMeshComponent> Mesh;
+
+	TArray<UPaperSpriteComponent*> sprites;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> spriteRoot;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> sprite1;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> sprite2;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> sprite3;
+
+};
