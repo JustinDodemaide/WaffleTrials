@@ -24,4 +24,10 @@ struct FItemData : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Data")
 	TObjectPtr<class UPaperSprite> sprite;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Data")
+	bool servable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Data")
+	int seconds;
 };

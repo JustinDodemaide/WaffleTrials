@@ -1,25 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "WaffleTrials/WaffleTrialsGameMode.h"
 #include "WaffleTrialsGameState.h"
 #include "Net/UnrealNetwork.h"
 
 void AWaffleTrialsGameState::BeginPlay()
 {
-	Super::BeginPlay();
 
-	if (!HasAuthority()) return;
-
-	orders.SetNum(4);
-
-	FOrder& testOrder = orders[0];
-	testOrder.orderId = 0;
-	testOrder.items.SetNum(3);
-	testOrder.items[0].item = EItem::Donut;
-	testOrder.items[1].item = EItem::Coffee;
-	testOrder.items[2].item = EItem::Waffle;
-
-	onOrdersChanged.Broadcast();
 }
 
 void AWaffleTrialsGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{
@@ -43,13 +31,17 @@ bool AWaffleTrialsGameState::attemptSubmitItem(int32 slotIndex, EItem Item){
 		if (OrderItem.delivered)
 			continue;
 
+		OrderItem.delivered = true;
+
 		if (Order.fulfilled()){
-			// score, sound, clear the slot
 			Order.orderId = -1;
 			Order.items.Empty();
+
+			if (AWaffleTrialsGameMode* gm = GetWorld()->GetAuthGameMode<AWaffleTrialsGameMode>()){
+				gm->onOrderCompleted(slotIndex);
+			}
 		}
 
-		OrderItem.delivered = true;
 		onOrdersChanged.Broadcast();
 		return true;
 	}
@@ -75,4 +67,16 @@ EItem AWaffleTrialsGameState::getItem(int32 slotIndex, int32 itemIndex) const{
 
 	const FOrderItem& orderItem = order.items[itemIndex];
 	return orderItem.delivered ? EItem::None : orderItem.item;
+}
+
+void AWaffleTrialsGameState::setOrder(int32 slotIndex, const FOrder& newOrder){
+	if (!HasAuthority()) return;
+	if (slotIndex < 0) return;
+
+	if (slotIndex >= orders.Num()){
+		orders.SetNum(slotIndex + 1);
+	}
+
+	orders[slotIndex] = newOrder;
+	onOrdersChanged.Broadcast();
 }

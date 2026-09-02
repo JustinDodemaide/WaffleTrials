@@ -9,10 +9,6 @@
 #include "OrderReceptacle.generated.h"
 
 
-// add the sprites in a row, check
-// the rest of the fucking owl
-// 
-
 UCLASS()
 class WAFFLETRIALS_API AOrderReceptacle : public AActor, public IInteractable
 {

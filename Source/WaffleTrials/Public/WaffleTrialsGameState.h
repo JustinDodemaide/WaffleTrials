@@ -59,6 +59,9 @@ public:
 	// helper function for the receptacle class to toggle the sprites correctly
 	EItem getItem(int32 slotIndex, int32 itemIndex) const;
 
+	// gamemode sets the order slots, not this class
+	void setOrder(int32 slotIndex, const FOrder& newOrder);
+
 protected:
 	virtual void BeginPlay() override;
 
