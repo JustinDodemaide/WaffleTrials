@@ -5,14 +5,19 @@
 #include "WaffleTrialsGameState.h"
 #include "Net/UnrealNetwork.h"
 
-void AWaffleTrialsGameState::BeginPlay()
-{
+void AWaffleTrialsGameState::BeginPlay(){
+	Super::BeginPlay();
+	if (!HasAuthority)
+		return;
 
+	currentLives = startingLives;
 }
 
 void AWaffleTrialsGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AWaffleTrialsGameState, orders);
+	DOREPLIFETIME(AWaffleTrialsGameState, currentLives);
+	DOREPLIFETIME(AWaffleTrialsGameState, gameOver);
 }
 
 bool AWaffleTrialsGameState::attemptSubmitItem(int32 slotIndex, EItem Item){
@@ -79,4 +84,34 @@ void AWaffleTrialsGameState::setOrder(int32 slotIndex, const FOrder& newOrder){
 
 	orders[slotIndex] = newOrder;
 	onOrdersChanged.Broadcast();
+}
+
+void AWaffleTrialsGameState::clearOrder(int32 slotIndex){
+	if (!HasAuthority()) return;
+	if (!orders.IsValidIndex(slotIndex)) return;
+
+	orders[slotIndex].orderId = -1;
+	orders[slotIndex].items.Empty();
+	onOrdersChanged.Broadcast();
+}
+
+void AWaffleTrialsGameState::loseLife(){
+	if (!HasAuthority()) return;
+	if (gameOver) return;
+
+	currentLives = FMath::Max(0, currentLives - 1);
+	onLivesChanged.Broadcast();
+
+	if (currentLives == 0){
+		gameOver = true;
+		onGameOver.Broadcast();
+	}
+}
+
+void AWaffleTrialsGameState::OnRep_Lives(){
+	onLivesChanged.Broadcast();
+}
+
+void AWaffleTrialsGameState::OnRep_GameOver(){
+	onGameOver.Broadcast();
 }

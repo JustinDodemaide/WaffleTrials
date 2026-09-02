@@ -18,13 +18,17 @@ void AWaffleTrialsGameMode::BeginPlay() {
 
 	buildItemPool();
 
+	// subscribe to gameOver signal
+	if (AWaffleTrialsGameState* gameState = GetGameState<AWaffleTrialsGameState>())
+		gameState->onGameOver.AddUObject(this, &AWaffleTrialsGameMode::onGameOver);
+
 	slotTimers.SetNum(orderSlotCount);
 	for (int32 i = 0; i < orderSlotCount; ++i)
 		startNewOrderTimer(i);
 }
 
-void AWaffleTrialsGameMode::buildItemPool()
-{
+void AWaffleTrialsGameMode::buildItemPool(){
+	// better to cache them then access the table every time
 	UWGameInstance* gameInstance = Cast<UWGameInstance>(UGameplayStatics::GetGameInstance(this));
 	if (!gameInstance || !gameInstance->ItemDataTable){
 		UE_LOG(LogWaffleTrials, Error, TEXT("no game instance or data table"));
@@ -46,6 +50,7 @@ void AWaffleTrialsGameMode::buildItemPool()
 
 		if (itemData->servable){
 			servableItems.Add(item);
+			itemSeconds.Add(item, itemData->seconds);
 		}
 	}
 }
@@ -88,8 +93,39 @@ void AWaffleTrialsGameMode::spawnOrder(int32 slotIndex){
 		orderItem.delivered = false;
 	}
 
+	float total = 0.f;
+	for (const FOrderItem& orderItem : newOrder.items)
+		total += itemSeconds.FindRef(orderItem.item);
+
+	newOrder.timeLimit = gameState->GetServerWorldTimeSeconds() + total;
+
+	FTimerDelegate del = FTimerDelegate::CreateUObject(
+		this, &AWaffleTrialsGameMode::onOrderTimeLimitReached, slotIndex);
+	GetWorldTimerManager().SetTimer(slotTimers[slotIndex], del, total, false);
+
 	gameState->setOrder(slotIndex, newOrder);
 
 	UE_LOG(LogWaffleTrials, Warning, TEXT("spawned order %d in slot %d, %d items"),
 		newOrder.orderId, slotIndex, itemCount);
+}
+
+void AWaffleTrialsGameMode::onOrderTimeLimitReached(int32 slotIndex){
+	AWaffleTrialsGameState* gameState = GetGameState<AWaffleTrialsGameState>();
+	if (!gameState)
+		return;
+
+	gameState->clearOrder(slotIndex);
+	gameState->loseLife();
+
+	// dont start the timer if the game is over
+	if (gameState->isGameOver())
+		return;
+	startNewOrderTimer(slotIndex);
+}
+
+void AWaffleTrialsGameMode::onGameOver(){
+	// need to stop all the order timers
+	for (FTimerHandle& handle : slotTimers){
+		GetWorldTimerManager().ClearTimer(handle);
+	}
 }

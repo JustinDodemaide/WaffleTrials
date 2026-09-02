@@ -29,6 +29,7 @@ protected:
 	TArray<EItem> servableItems;
 	void buildItemPool();
 
+	TMap<EItem, float> itemSeconds;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Orders")
 	int32 orderSlotCount = 4;
@@ -45,6 +46,10 @@ protected:
 	void spawnOrder(int32 slotIndex);
 
 	int32 nextOrderId = 0;
+
+	void onOrderTimeLimitReached(int32 slotIndex);
+
+	void onGameOver();
 };
 
 
