@@ -43,4 +43,13 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> sprite3;
 
+	UPROPERTY(EditAnywhere, Category = "Order")
+	int32 orderSlotID = 0;
+
+	FDelegateHandle ordersChangedHandle;
+
+	void updateVisuals();
+	void hideSprites();
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 };

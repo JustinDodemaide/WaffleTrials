@@ -2,11 +2,14 @@
 
 
 #include "OrderReceptacle.h"
+#include "WaffleTrialsGameState.h"
+#include "WaffleTrialsCharacter.h"
+#include "WGameInstance.h"
+#include "Engine/DataTable.h"
+#include "Kismet/GameplayStatics.h"
+#include "WaffleTrials.h"
 
-// Sets default values
-AOrderReceptacle::AOrderReceptacle()
-{
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+AOrderReceptacle::AOrderReceptacle(){
 	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
@@ -21,14 +24,95 @@ AOrderReceptacle::AOrderReceptacle()
 	sprite3->SetupAttachment(spriteRoot);
 }
 
-// Called when the game starts or when spawned
-void AOrderReceptacle::BeginPlay()
-{
+void AOrderReceptacle::BeginPlay(){
 	Super::BeginPlay();
 	
 	sprites = {sprite1, sprite2, sprite3};
+
+	// instead of making the game state scan every actor,
+	// we can make this actor subscribe to the game state's
+	// onOrdersChanged call (connecting updateVisuals to it)
+	// like godot's observer pattern
+	AWaffleTrialsGameState* gameState = GetWorld()->GetGameState<AWaffleTrialsGameState>();
+	if (!gameState)
+		return;
+	ordersChangedHandle = gameState->onOrdersChanged.AddUObject(this, &AOrderReceptacle::updateVisuals);
+
+	updateVisuals();
 }
 
-void AOrderReceptacle::Interact(APawn* Interactor) {
+void AOrderReceptacle::updateVisuals()
+{
+	AWaffleTrialsGameState* gameState = GetWorld()->GetGameState<AWaffleTrialsGameState>();
+	if (!gameState){
+		hideSprites();
+		return;
+	}
 
+	UWGameInstance* gameInstance = Cast<UWGameInstance>(UGameplayStatics::GetGameInstance(this));
+	if (!gameInstance || !gameInstance->ItemDataTable){
+		hideSprites();
+		return;
+	}
+
+	for (int32 i = 0; i < sprites.Num(); ++i){
+		const EItem item = gameState->getItem(orderSlotID, i);
+
+		if (item == EItem::None){
+			sprites[i]->SetVisibility(false);
+			continue;
+		}
+
+		const FString itemName = UEnum::GetDisplayValueAsText(item).ToString();
+		FItemData* itemInfo = gameInstance->ItemDataTable->FindRow<FItemData>(
+			FName(*itemName), TEXT("looking up sprite"));
+
+		if (!itemInfo){
+			sprites[i]->SetVisibility(false);
+			continue;
+		}
+
+		sprites[i]->SetSprite(itemInfo->sprite);
+		sprites[i]->SetVisibility(true);
+	}
+}
+
+void AOrderReceptacle::hideSprites(){
+	for (UPaperSpriteComponent* sprite : sprites)
+		sprite->SetVisibility(false);
+}
+
+void AOrderReceptacle::Interact(APawn* Interactor){
+	UE_LOG(LogWaffleTrials, Warning, TEXT("FFFFFFFFFFFFFFFFFFFFFFFFFFFFF"));
+	if (!HasAuthority()) return;
+
+	AWaffleTrialsCharacter* player = Cast<AWaffleTrialsCharacter>(Interactor);
+	if (!player)
+		return;
+
+	const EItem playerItem = player->GetHeldItem();
+	if (playerItem == EItem::None)
+		return;
+
+	AWaffleTrialsGameState* gameState = GetWorld()->GetGameState<AWaffleTrialsGameState>();
+	if (!gameState)
+		return;
+
+	UE_LOG(LogWaffleTrials, Warning, TEXT("HHHHHHHHHHHHHHHHHHHHHHHHHHHH"));
+	if (gameState->attemptSubmitItem(orderSlotID, playerItem)) {
+		player->SetHeldItem(EItem::None);
+		UE_LOG(LogWaffleTrials, Warning, TEXT("XXXXXXXXXXXXXXXXXXXX"));
+
+	}
+
+	UE_LOG(LogWaffleTrials, Warning, TEXT("GGGGGGGGGGGGGGGGG"));
+}
+
+// need to manually unsubscribe from the "signal" when this object gets deallocated
+void AOrderReceptacle::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+	Super::EndPlay(EndPlayReason);
+	AWaffleTrialsGameState* gameState = GetWorld()->GetGameState<AWaffleTrialsGameState>();
+	if (!gameState)
+		return;
+	gameState->onOrdersChanged.Remove(ordersChangedHandle);
 }
