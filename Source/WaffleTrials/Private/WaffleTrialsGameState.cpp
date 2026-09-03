@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "WaffleTrials/WaffleTrialsGameMode.h"
 #include "WaffleTrialsGameState.h"
 #include "Net/UnrealNetwork.h"
+#include "WaffleTrials/WaffleTrialsGameMode.h"
 
 void AWaffleTrialsGameState::BeginPlay(){
 	Super::BeginPlay();
