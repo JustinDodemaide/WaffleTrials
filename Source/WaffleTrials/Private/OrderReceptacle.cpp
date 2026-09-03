@@ -42,6 +42,8 @@ void AOrderReceptacle::BeginPlay(){
 	ordersChangedHandle = gameState->onOrdersChanged.AddUObject(this, &AOrderReceptacle::updateVisuals);
 
 	updateVisuals();
+
+	progressBarMaterial = progressBar->CreateAndSetMaterialInstanceDynamic(0);
 }
 
 void AOrderReceptacle::Tick(float DeltaTime){
@@ -54,8 +56,14 @@ void AOrderReceptacle::Tick(float DeltaTime){
 	}
 
 	const float progress = gameState->getTimeRemaining(orderSlotID);
+
+	// set color
+	const FLinearColor color = progress >= 0.66f ? FLinearColor::Green : progress >= 0.33f ? FLinearColor(1.f, 0.5f, 0.f) : FLinearColor::Red;
+	if (progressBarMaterial)
+		progressBarMaterial->SetVectorParameterValue(FName("BaseColor"), color);
+	
 	progressBar->SetVisibility(progress > 0.f);
-	progressBar->SetRelativeScale3D(FVector(progress, 0.1f, 0.25f) * 5);
+	progressBar->SetRelativeScale3D(FVector(progress, 1.0f, 1.0f) * 5);
 }
 
 void AOrderReceptacle::updateVisuals()

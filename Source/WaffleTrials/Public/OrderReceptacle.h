@@ -51,4 +51,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UStaticMeshComponent> progressBar;
+
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> progressBarMaterial;
 };
