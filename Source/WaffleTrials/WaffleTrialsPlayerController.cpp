@@ -26,10 +26,7 @@ void AWaffleTrialsPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (IsLocalPlayerController())
-	{
-		ApplyFixedCamera();
-	}
+	setCamera();
 }
 
 void AWaffleTrialsPlayerController::SetupInputComponent()
@@ -65,44 +62,76 @@ bool AWaffleTrialsPlayerController::ShouldUseTouchControls() const
 	return SVirtualJoystick::ShouldDisplayTouchInterface() || bForceTouchControls;
 }
 
-void AWaffleTrialsPlayerController::TryInteract() {
-	APawn* MyPawn = GetPawn();
-	if (!MyPawn) { return; }
+void AWaffleTrialsPlayerController::attemptInteract() {
+	APawn* pawn = GetPawn();
+	if (!pawn)
+		return;
 
-	if (UInteractorComponent* Interactor = MyPawn->FindComponentByClass<UInteractorComponent>())
-	{
-		if (AActor* Target = Cast<AActor>(Interactor->GetCurrentInteractable().GetObject()))
-		{
-			Server_Interact(Target);
-		}
-	}
+	UInteractorComponent* interactor = pawn->FindComponentByClass<UInteractorComponent>();
+	if (!interactor)
+		return;
+
+	AActor* target = Cast<AActor>(interactor->GetCurrentInteractable().GetObject());
+	if (!target)
+		return;
+
+	Server_Interact(target);
 }
 
-void AWaffleTrialsPlayerController::Server_Interact_Implementation(AActor* Target) {
-	APawn* MyPawn = GetPawn();
-	if (!Target || !MyPawn || !Target->Implements<UInteractable>())
-	{
+void AWaffleTrialsPlayerController::Server_Interact_Implementation(AActor* target) {
+	APawn* pawn = GetPawn();
+	if (!target)
 		return;
-	}
-
-	if (FVector::DistSquared(MyPawn->GetActorLocation(), Target->GetActorLocation())
-		> FMath::Square(300.f))
-	{
+	if (!pawn)
 		return;
-	}
+	if (!target->Implements<UInteractable>())
+		return;
 
-	Cast<IInteractable>(Target)->Interact(MyPawn);
+	if (FVector::DistSquared(pawn->GetActorLocation(), target->GetActorLocation()) > FMath::Square(300.f))
+		return;
+
+	Cast<IInteractable>(target)->Interact(pawn);
 }
+
+/*
+void AWaffleTrialsPlayerController::AcknowledgePossession(APawn* P)
+{
+	Super::AcknowledgePossession(P);
+
+	setCamera();
+
+	// we have a race condition where BeginPlay is running before the LocalPlayer is set,
+	// so its bailing before the hud is assigned
+	if (!hudWidget && hudWidgetClass)
+	{
+		hudWidget = CreateWidget<UWaffleHUDWidget>(this, hudWidgetClass);
+		if (hudWidget)
+			hudWidget->AddToViewport();
+	}
+}
+*/
 
 void AWaffleTrialsPlayerController::AcknowledgePossession(APawn* P)
 {
 	Super::AcknowledgePossession(P);
-	ApplyFixedCamera();
+
+	setCamera();
+
+	UE_LOG(LogWaffleTrials, Warning, TEXT("AcknowledgePossession: class %s, existing %s"),
+		*GetNameSafe(hudWidgetClass), *GetNameSafe(hudWidget));
+
+	if (!hudWidget && hudWidgetClass)
+	{
+		hudWidget = CreateWidget<UWaffleHUDWidget>(this, hudWidgetClass);
+		UE_LOG(LogWaffleTrials, Warning, TEXT("created hud: %s"), *GetNameSafe(hudWidget));
+		if (hudWidget)
+			hudWidget->AddToViewport();
+	}
 }
 
-void AWaffleTrialsPlayerController::ApplyFixedCamera() {
+void AWaffleTrialsPlayerController::setCamera() {
 	TArray<AActor*> cameras;
-	UGameplayStatics::GetAllActorsOfClassWithTag(this, ACameraActor::StaticClass(), KitchenCameraTag,
+	UGameplayStatics::GetAllActorsOfClassWithTag(this, ACameraActor::StaticClass(), fixedCameraTag,
 		cameras);
 	if (cameras.Num() > 0) {
 		SetViewTarget(cameras[0]);

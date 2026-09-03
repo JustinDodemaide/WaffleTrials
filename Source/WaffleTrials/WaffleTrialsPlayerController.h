@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "WaffleHUDWidget.h"
 #include "WaffleTrialsPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -23,49 +24,46 @@ public:
 	AWaffleTrialsPlayerController();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	FName KitchenCameraTag = FName("KitchenCamera");
+	FName fixedCameraTag = FName("KitchenCamera");
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<class UInputAction> UseAction;
 	
 protected:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UWaffleHUDWidget> hudWidgetClass;
 
-	/** Input Mapping Contexts */
+	UPROPERTY()
+	TObjectPtr<UWaffleHUDWidget> hudWidget;
+
 	UPROPERTY(EditAnywhere, Category ="Input|Input Mappings")
 	TArray<UInputMappingContext*> DefaultMappingContexts;
 
-	/** Input Mapping Contexts */
 	UPROPERTY(EditAnywhere, Category="Input|Input Mappings")
 	TArray<UInputMappingContext*> MobileExcludedMappingContexts;
 
-	/** Mobile controls widget to spawn */
 	UPROPERTY(EditAnywhere, Category="Input|Touch Controls")
 	TSubclassOf<UUserWidget> MobileControlsWidgetClass;
 
-	/** Pointer to the mobile controls widget */
 	UPROPERTY()
 	TObjectPtr<UUserWidget> MobileControlsWidget;
 
-	/** If true, the player will use UMG touch controls even if not playing on mobile platforms */
 	UPROPERTY(EditAnywhere, Config, Category = "Input|Touch Controls")
 	bool bForceTouchControls = false;
 
-	/** Gameplay initialization */
 	virtual void BeginPlay() override;
 
-	/** Input mapping context setup */
 	virtual void SetupInputComponent() override;
 
-	/** Returns true if the player should use UMG touch controls */
 	bool ShouldUseTouchControls() const;
 
-	// fixes connected clients not using the fixed camera
 	virtual void AcknowledgePossession(APawn* P) override;
-	void ApplyFixedCamera();
+
+	void setCamera();
 
 public:
 	UFUNCTION(Server, Reliable)
-	void Server_Interact(AActor* Target);
+	void Server_Interact(AActor* target);
 
-	void TryInteract();
+	void attemptInteract();
 };

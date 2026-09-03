@@ -105,7 +105,7 @@ void AWaffleTrialsCharacter::Interact(){
 
 	AWaffleTrialsPlayerController* pc = Cast<AWaffleTrialsPlayerController>(GetController());
 	if (pc)
-		pc->TryInteract();
+		pc->attemptInteract();
 }
 
 void AWaffleTrialsCharacter::SetHeldItem(EItem item){
