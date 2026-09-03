@@ -23,8 +23,8 @@ public class WaffleTrials : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "Paper2D" });
-
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "Paper2D", "UMG", "Slate", "SlateCore" });
+		
 		PublicIncludePaths.AddRange(new string[] {
 			"WaffleTrials",
 			"WaffleTrials/Variant_Platforming",
