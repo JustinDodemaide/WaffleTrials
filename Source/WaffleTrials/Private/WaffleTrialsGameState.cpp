@@ -18,6 +18,7 @@ void AWaffleTrialsGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME(AWaffleTrialsGameState, orders);
 	DOREPLIFETIME(AWaffleTrialsGameState, currentLives);
 	DOREPLIFETIME(AWaffleTrialsGameState, gameOver);
+	DOREPLIFETIME(AWaffleTrialsGameState, score);
 }
 
 bool AWaffleTrialsGameState::attemptSubmitItem(int32 slotIndex, EItem Item){
@@ -39,6 +40,9 @@ bool AWaffleTrialsGameState::attemptSubmitItem(int32 slotIndex, EItem Item){
 		OrderItem.delivered = true;
 
 		if (Order.fulfilled()){
+			score += pointsPerOrder;
+			onScoreChanged.Broadcast();
+
 			Order.orderId = -1;
 			Order.items.Empty();
 
@@ -68,7 +72,6 @@ bool AWaffleTrialsGameState::attemptSubmitItem(int32 slotIndex, EItem Item){
 
 	return false;
 }
-
 
 void AWaffleTrialsGameState::OnRep_ActiveOrders(){
 	onOrdersChanged.Broadcast();
@@ -145,4 +148,8 @@ float AWaffleTrialsGameState::getTimeRemaining(int32 slotIndex) const{
 
 	const float remaining = order.timeLimit - GetServerWorldTimeSeconds();
 	return FMath::Clamp(remaining / duration, 0.f, 1.f);
+}
+
+void AWaffleTrialsGameState::OnRep_Score() {
+	onScoreChanged.Broadcast();
 }

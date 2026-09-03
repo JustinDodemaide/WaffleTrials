@@ -57,23 +57,6 @@ class WAFFLETRIALS_API AWaffleTrialsGameState : public AGameStateBase
 
 
 public:
-	// --- life section start ---
-	void loseLife();
-	void clearOrder(int32 slotIndex);
-
-	int32 getLives() const {
-		return currentLives;
-	}
-	DECLARE_MULTICAST_DELEGATE(FOnLivesChanged);
-	FOnLivesChanged onLivesChanged;
-
-	bool isGameOver() const {
-		return gameOver;
-	}
-	DECLARE_MULTICAST_DELEGATE(FOnGameOver);
-	FOnGameOver onGameOver;
-	// --- life section end ---
-
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	DECLARE_MULTICAST_DELEGATE(FOnOrdersChanged);
@@ -90,7 +73,33 @@ public:
 	float getTimeRemaining(int32 slotIndex) const;
 
 protected:
-	// --- life section start ---
+	virtual void BeginPlay() override;
+
+	UPROPERTY(ReplicatedUsing = OnRep_ActiveOrders)
+	TArray<FOrder> orders;
+
+	UFUNCTION()
+	void OnRep_ActiveOrders();
+
+
+// --- life section start ---
+public:
+	void loseLife();
+	void clearOrder(int32 slotIndex);
+
+	int32 getLives() const {
+		return currentLives;
+	}
+	DECLARE_MULTICAST_DELEGATE(FOnLivesChanged);
+	FOnLivesChanged onLivesChanged;
+
+	bool isGameOver() const {
+		return gameOver;
+	}
+	DECLARE_MULTICAST_DELEGATE(FOnGameOver);
+	FOnGameOver onGameOver;
+
+protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Game")
 	int32 startingLives = 3;
 
@@ -106,13 +115,25 @@ protected:
 
 	UFUNCTION()
 	void OnRep_GameOver();
-	// --- life section end ---
+// --- life section end ---
 
-	virtual void BeginPlay() override;
+// --- score section start
+public:
+	int32 getScore() const {
+		return score;
+	}
 
-	UPROPERTY(ReplicatedUsing = OnRep_ActiveOrders)
-	TArray<FOrder> orders;
+	DECLARE_MULTICAST_DELEGATE(FOnScoreChanged);
+	FOnScoreChanged onScoreChanged;
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	int32 pointsPerOrder = 100;
+
+	UPROPERTY(ReplicatedUsing = OnRep_Score)
+	int32 score = 0;
 
 	UFUNCTION()
-	void OnRep_ActiveOrders();
+	void OnRep_Score();
+// --- score section end ---
 };
