@@ -27,6 +27,9 @@ void AWaffleTrialsPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	setCamera();
+
+	SetInputMode(FInputModeGameOnly());
+	bShowMouseCursor = false;
 }
 
 void AWaffleTrialsPlayerController::SetupInputComponent()

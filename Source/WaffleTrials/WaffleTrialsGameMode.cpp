@@ -19,12 +19,11 @@ void AWaffleTrialsGameMode::BeginPlay() {
 	buildItemPool();
 
 	// subscribe to gameOver signal
-	if (AWaffleTrialsGameState* gameState = GetGameState<AWaffleTrialsGameState>())
+	AWaffleTrialsGameState* gameState = GetGameState<AWaffleTrialsGameState>();
+	if (gameState)
 		gameState->onGameOver.AddUObject(this, &AWaffleTrialsGameMode::onGameOver);
 
 	slotTimers.SetNum(orderSlotCount);
-	for (int32 i = 0; i < orderSlotCount; ++i)
-		startNewOrderTimer(i);
 }
 
 void AWaffleTrialsGameMode::buildItemPool(){
@@ -137,4 +136,16 @@ void AWaffleTrialsGameMode::resetOrderTimer(int32 slotIndex, float newTime) {
 	FTimerDelegate del = FTimerDelegate::CreateUObject(
 		this, &AWaffleTrialsGameMode::onOrderTimeLimitReached, slotIndex);
 	GetWorldTimerManager().SetTimer(slotTimers[slotIndex], del, newTime, false);
+}
+
+void AWaffleTrialsGameMode::PostLogin(APlayerController* NewPlayer) {
+	// we want to wait until the second player joins before we start the game
+	Super::PostLogin(NewPlayer);
+
+	if (GetNumPlayers() >= 2 && !gameStarted){
+		gameStarted = true;
+
+		for (int32 i = 0; i < orderSlotCount; ++i)
+			startNewOrderTimer(i);
+	}
 }

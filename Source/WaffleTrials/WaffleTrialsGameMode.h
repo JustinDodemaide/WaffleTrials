@@ -25,7 +25,11 @@ public:
 
 	void resetOrderTimer(int32 slotIndex, float newTime);
 
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
 protected:
+	bool gameStarted = false;
+
 	virtual void BeginPlay() override;
 	// dont want the customer to ask for raw eggs so we need a list of valid items
 	TArray<EItem> servableItems;
