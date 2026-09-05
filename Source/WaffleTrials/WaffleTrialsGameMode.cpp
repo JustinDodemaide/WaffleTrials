@@ -21,7 +21,7 @@ void AWaffleTrialsGameMode::BeginPlay() {
 	// subscribe to gameOver signal
 	AWaffleTrialsGameState* gameState = GetGameState<AWaffleTrialsGameState>();
 	if (gameState)
-		gameState->onGameOver.AddUObject(this, &AWaffleTrialsGameMode::onGameOver);
+		gameState->onGameOver.AddDynamic(this, &AWaffleTrialsGameMode::onGameOver);
 
 	slotTimers.SetNum(orderSlotCount);
 }

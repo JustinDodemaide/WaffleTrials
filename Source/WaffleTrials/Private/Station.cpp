@@ -4,38 +4,35 @@
 #include "Components/TextRenderComponent.h"
 #include "Net/UnrealNetwork.h"
 
-AStation::AStation()
-{
+AStation::AStation(){
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
 
+	/*
 	CountText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("CountText"));
-	//RootComponent = CountText;
 	CountText->SetHorizontalAlignment(EHTA_Center);
 	CountText->SetWorldSize(80.f);
 	CountText->SetupAttachment(Mesh);
 	CountText->SetRelativeLocation(FVector(0.f, 0.f, 200.f));
+	*/
+
+	Mesh->SetCustomDepthStencilValue(1);
 }
 
-void AStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
+void AStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
 	DOREPLIFETIME(AStation, Count);
 }
 
-void AStation::Interact(APawn* Interactor)
-{
+void AStation::Interact(APawn* Interactor){
 	if (!HasAuthority())
-	{
 		return;
-	}
 
-	Count++;
-	UpdateCount();
+	//Count++;
+	//UpdateCount();
 }
 
 void AStation::OnRep_Count() {
@@ -53,10 +50,8 @@ void AStation::Targeted(bool targeted) {
 void AStation::SetHighlight(bool highlight) {
 	Mesh->SetRenderCustomDepth(highlight);
 
-	if (highlight) {
+	if (highlight)
 		CountText->SetTextRenderColor(FColor::Green);
-	}
-	else {
+	else
 		CountText->SetTextRenderColor(FColor::White);
-	}
 }

@@ -96,7 +96,10 @@ public:
 	bool isGameOver() const {
 		return gameOver;
 	}
-	DECLARE_MULTICAST_DELEGATE(FOnGameOver);
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameOver);
+
+	UPROPERTY(BlueprintAssignable, Category = "Game")
 	FOnGameOver onGameOver;
 
 protected:
@@ -119,6 +122,7 @@ protected:
 
 // --- score section start
 public:
+	UFUNCTION(BlueprintPure, Category = "Game")
 	int32 getScore() const {
 		return score;
 	}

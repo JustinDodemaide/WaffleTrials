@@ -11,6 +11,9 @@ void AWaffleTrialsGameState::BeginPlay(){
 		return;
 
 	currentLives = startingLives;
+	score = 0;
+	gameOver = false;
+	orders.Empty();
 }
 
 void AWaffleTrialsGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{

@@ -55,6 +55,7 @@ protected:
 
 	void onOrderTimeLimitReached(int32 slotIndex);
 
+	UFUNCTION()
 	void onGameOver();
 };
 

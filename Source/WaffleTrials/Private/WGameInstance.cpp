@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "WaffleTrials.h"
 #include "Online/OnlineSessionNames.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 static const FName SESSION_NAME = TEXT("WaffleSession");
 static const FName KEY_GAMEID = TEXT("WAFFLETRIALS_GAMEID");
@@ -121,7 +122,6 @@ void UWGameInstance::onFindComplete(bool success) {
 
 	screenMsg(FString::Printf(TEXT("raw results: %d"), sessionSearch->SearchResults.Num()), FColor::Yellow);
 
-	// app id 480 is shared, so filter to only our sessions
 	sessionSearch->SearchResults.RemoveAll([](const FOnlineSessionSearchResult& result) {
 		FString value;
 		bool found = result.Session.SessionSettings.Get(KEY_GAMEID, value);
@@ -132,6 +132,8 @@ void UWGameInstance::onFindComplete(bool success) {
 		});
 
 	screenMsg(FString::Printf(TEXT("waffle results: %d"), sessionSearch->SearchResults.Num()), FColor::Yellow);
+
+	onGamesFound.Broadcast();
 }
 
 int32 UWGameInstance::getFoundCount() const {
@@ -178,4 +180,58 @@ void UWGameInstance::onJoinComplete(FName sessionName, EOnJoinSessionCompleteRes
 		return;
 
 	pc->ClientTravel(address, ETravelType::TRAVEL_Absolute);
+}
+
+TArray<FFoundGame> UWGameInstance::getFoundGames() const {
+	TArray<FFoundGame> games;
+
+	if (!sessionSearch.IsValid())
+		return games;
+
+	for (int32 i = 0; i < sessionSearch->SearchResults.Num(); i++) {
+		const FOnlineSessionSearchResult& result = sessionSearch->SearchResults[i];
+
+		FFoundGame game;
+		game.hostName = result.Session.OwningUserName;
+		game.ping = result.PingInMs;
+		game.openSlots = result.Session.NumOpenPublicConnections;
+		game.maxSlots = result.Session.SessionSettings.NumPublicConnections;
+		game.index = i;
+
+		games.Add(game);
+	}
+
+	return games;
+}
+
+bool UWGameInstance::isHost() const {
+	UWorld* world = GetWorld();
+	if (!world)
+		return false;
+
+	ENetMode mode = world->GetNetMode();
+	// makes sure this only works with the host and in single player
+	// NM_Client would allow the other players to restart the game
+	// which we don't want
+	return mode == NM_ListenServer || mode == NM_Standalone;
+}
+
+void UWGameInstance::restartGame() {
+	if (!isHost())
+		return;
+
+	GetWorld()->ServerTravel(lobbyMapName + TEXT("?listen"));
+}
+
+void UWGameInstance::quitGame() {
+	// ends the game for everyone
+	// note that this does start another session as its quitting
+	if (sessionInterface.IsValid() && sessionInterface->GetNamedSession(SESSION_NAME))
+		sessionInterface->DestroySession(SESSION_NAME);
+
+	APlayerController* pc = GetFirstLocalPlayerController();
+	if (!pc)
+		return;
+
+	UKismetSystemLibrary::QuitGame(this, pc, EQuitPreference::Quit, false);
 }

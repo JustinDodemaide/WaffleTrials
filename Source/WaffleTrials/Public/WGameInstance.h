@@ -8,19 +8,54 @@
 #include "Interfaces/OnlineSessionInterface.h"
 #include "WGameInstance.generated.h"
 
-/**
- *
- */
+USTRUCT(BlueprintType)
+struct FFoundGame {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	FString hostName;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 ping = 0;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 openSlots = 0;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 maxSlots = 0;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 index = -1;
+};
+
 UCLASS()
 class WAFFLETRIALS_API UWGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 
 public:
+	// we only want the host to be able to restart (avoids an extra RPC)
+	UFUNCTION(BlueprintPure, Category = "Session")
+	bool isHost() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Session")
+	void restartGame();
+
+	UFUNCTION(BlueprintCallable, Category = "Session")
+	void quitGame();
+
 	virtual void Init() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game Data")
 	TObjectPtr<class UDataTable> ItemDataTable;
+
+	UFUNCTION(BlueprintCallable, Category = "Session")
+	TArray<FFoundGame> getFoundGames() const;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGamesFound);
+
+	UPROPERTY(BlueprintAssignable, Category = "Session")
+	FOnGamesFound onGamesFound;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Session")
