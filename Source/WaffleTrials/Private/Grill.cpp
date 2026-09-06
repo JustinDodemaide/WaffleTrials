@@ -81,7 +81,7 @@ void AGrill::timeout()
     {
         state = EGrillState::Done;
         updateVisuals();
-        GetWorldTimerManager().SetTimer(timer, this, &AGrill::timeout, 5.0f, false);
+        GetWorldTimerManager().SetTimer(timer, this, &AGrill::timeout, 8.0f, false);
     }
     else if (state == EGrillState::Done)
     {
