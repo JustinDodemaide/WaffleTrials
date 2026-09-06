@@ -25,7 +25,6 @@ ATrash::ATrash() {
 void ATrash::BeginPlay() {
 	Super::BeginPlay();
 
-	// Covers players who join while the bin is already cooling down.
 	UpdateSprite();
 }
 
@@ -43,9 +42,9 @@ void ATrash::Interact(APawn* Interactor) {
 	player->SetHeldItem(EItem::None);
 	MulticastPlayAnim();
 
-	state = ETrashState::CoolingDown;
-	UpdateSprite(); // OnRep doesn't fire on the authority, so do it by hand
-	GetWorldTimerManager().SetTimer(timer, this, &ATrash::timeout, 5.0f, false);
+	//state = ETrashState::CoolingDown;
+	//UpdateSprite();
+	//GetWorldTimerManager().SetTimer(timer, this, &ATrash::timeout, 5.0f, false);
 }
 
 void ATrash::timeout() {

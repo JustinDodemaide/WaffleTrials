@@ -79,7 +79,7 @@ void AWaffleMaker::timeout()
     {
         state = EWaffleMakerState::Done;
         updateVisuals();
-        GetWorldTimerManager().SetTimer(timer, this, &AWaffleMaker::timeout, 5.0f, false);
+        GetWorldTimerManager().SetTimer(timer, this, &AWaffleMaker::timeout, 7.5f, false);
     }
     else if (state == EWaffleMakerState::Done)
     {
