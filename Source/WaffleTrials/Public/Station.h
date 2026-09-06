@@ -18,25 +18,35 @@ public:
 
 	virtual void Interact(APawn* Interactor) override;
 	virtual void Targeted(bool bTargeted) override;
+	virtual void BeginPlay() override;
 
 protected:
-	UPROPERTY(ReplicatedUsing = OnRep_Count)
-	int32 Count = 0;
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	TObjectPtr<USkeletalMeshComponent> outlineMesh;
 
-	UFUNCTION()
-	void OnRep_Count();
+	UPROPERTY(EditDefaultsOnly, Category = "Highlight")
+	TObjectPtr<class UMaterialInterface> outlineMaterial;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Highlight")
+	float outlineScale = 1.1f;
+
+	//UPROPERTY(ReplicatedUsing = OnRep_Count)
+	//int32 Count = 0;
+
+	//UFUNCTION()
+	//void OnRep_Count();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<USkeletalMeshComponent> Mesh;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	TObjectPtr<UTextRenderComponent> CountText;
+	//UPROPERTY(VisibleAnywhere, Category = "Components")
+	//TObjectPtr<UTextRenderComponent> CountText;
 
 	void SetHighlight(bool highlighted);
 
-	void UpdateCount();
+	//void UpdateCount();
 
 
 };
