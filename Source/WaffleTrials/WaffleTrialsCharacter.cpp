@@ -48,6 +48,21 @@ AWaffleTrialsCharacter::AWaffleTrialsCharacter()
 	CarriedItemSprite->SetupAttachment(RootComponent);
 	CarriedItemSprite->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CarriedItemSprite->SetRelativeLocation(FVector(30.0f, 0.0f, 10.0f));
+
+	playerSprite = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("SpriteComp"));
+	playerSprite->SetupAttachment(RootComponent);
+	playerSprite->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	playerSprite->SetRelativeRotation(FRotator(0.f, 90.f, 0.f)); // flipbooks face -Y by default
+	playerSprite->SetRelativeLocation(FVector(0.f, 0.f, -20.f));
+
+	// fallback in case this decides to not work
+	GetMesh()->SetVisibility(false);
+	PrimaryActorTick.bCanEverTick = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+
+	// stop them from climbing over the counter
+	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
+	GetCharacterMovement()->MaxStepHeight = 0.f;
 }
 
 void AWaffleTrialsCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{
@@ -160,4 +175,28 @@ void AWaffleTrialsCharacter::UpdateCarriedItemSprite(){
 	}
 
 	CarriedItemSprite->SetSprite(ItemInfo->sprite);
+}
+
+void AWaffleTrialsCharacter::Tick(float DeltaTime){
+	Super::Tick(DeltaTime);
+
+	float facing = 1.f;
+
+	const FVector vel = GetVelocity();
+	UPaperFlipbook* anim;
+	if (vel.SizeSquared2D() > 1.f)
+		anim = move;
+	else
+		anim = idle;
+
+	if (playerSprite->GetFlipbook() != anim)
+		playerSprite->SetFlipbook(anim);
+
+	// flip left or right
+	if (vel.Y > 1.f)
+		facing = 1.f;
+	else if (vel.Y < -1.f)
+		facing = -1.f;
+
+	playerSprite->SetRelativeScale3D(FVector(facing, SpriteScale, SpriteScale) * 1.75);
 }

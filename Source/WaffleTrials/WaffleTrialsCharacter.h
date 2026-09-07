@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "ItemType.h"
+#include "PaperFlipbookComponent.h"
+#include "PaperFlipbook.h"
 #include "WaffleTrialsCharacter.generated.h"
 
 class UInputAction;
@@ -26,6 +28,19 @@ class AWaffleTrialsCharacter : public ACharacter
 	GENERATED_BODY()
 	
 protected:
+	UPROPERTY(EditAnywhere, Category = "Sprites")
+	float scale = 2.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UPaperFlipbookComponent* playerSprite;
+
+	UPROPERTY(EditAnywhere, Category = "Sprites")
+	class UPaperFlipbook* idle;
+
+	UPROPERTY(EditAnywhere, Category = "Sprites")
+	class UPaperFlipbook* move;
+
+	virtual void Tick(float DeltaTime) override;
 
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, Category="Input")
