@@ -10,10 +10,8 @@
 #include "WaffleTrials.h"
 #include "Customer.h"
 
-AOrderReceptacle::AOrderReceptacle(){
+AOrderReceptacle::AOrderReceptacle() {
 	PrimaryActorTick.bCanEverTick = true;
-
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 
 	spriteRoot = CreateDefaultSubobject<USceneComponent>(TEXT("spriteRoot"));
 	spriteRoot->SetupAttachment(Mesh);
@@ -31,6 +29,8 @@ AOrderReceptacle::AOrderReceptacle(){
 	customerSpawnPoint->SetupAttachment(Mesh);
 	customerSeatPoint = CreateDefaultSubobject<USceneComponent>(TEXT("customerSeatPoint"));
 	customerSeatPoint->SetupAttachment(Mesh);
+
+	Mesh->SetAnimationMode(EAnimationMode::AnimationSingleNode);
 }
 
 void AOrderReceptacle::BeginPlay(){
@@ -145,6 +145,10 @@ void AOrderReceptacle::Interact(APawn* Interactor){
 
 	}
 
+	if (gameState->attemptSubmitItem(orderSlotID, playerItem)) {
+		player->SetHeldItem(EItem::None);
+		MulticastPlayAnim();
+	}
 	//UE_LOG(LogWaffleTrials, Warning, TEXT("GGGGGGGGGGGGGGGGG"));
 }
 
@@ -185,4 +189,13 @@ void AOrderReceptacle::updateCustomer() {
 	}
 
 	customer->leave();
+}
+
+void AOrderReceptacle::MulticastPlayAnim_Implementation() {
+	if (!Mesh)
+		return;
+	if (!anim)
+		return;
+
+	Mesh->PlayAnimation(anim, false);
 }

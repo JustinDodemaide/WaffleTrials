@@ -6,11 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "PaperSpriteComponent.h"
 #include "Interactable.h"
+#include "Station.h"
 #include "OrderReceptacle.generated.h"
 
-
 UCLASS()
-class WAFFLETRIALS_API AOrderReceptacle : public AActor, public IInteractable
+class WAFFLETRIALS_API AOrderReceptacle : public AStation
 {
 	GENERATED_BODY()
 	
@@ -22,6 +22,12 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	TObjectPtr<class UAnimationAsset> anim;
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastPlayAnim();
+
 	UPROPERTY(VisibleAnywhere, Category = "Customer")
 	TObjectPtr<USceneComponent> customerSpawnPoint;
 
@@ -37,9 +43,6 @@ protected:
 	bool hadOrder = false;
 
 	void updateCustomer();
-
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	TObjectPtr<UStaticMeshComponent> Mesh;
 
 	TArray<UPaperSpriteComponent*> sprites;
 
