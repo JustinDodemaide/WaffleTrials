@@ -28,6 +28,10 @@ class AWaffleTrialsCharacter : public ACharacter
 	GENERATED_BODY()
 	
 protected:
+	bool isMoving = false;
+	float facing = 1.f;
+	float lastFacing = 1.f;
+
 	UPROPERTY(EditAnywhere, Category = "Sprites")
 	float scale = 2.0f;
 

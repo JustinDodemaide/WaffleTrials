@@ -48,6 +48,7 @@ AWaffleTrialsCharacter::AWaffleTrialsCharacter()
 	CarriedItemSprite->SetupAttachment(RootComponent);
 	CarriedItemSprite->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CarriedItemSprite->SetRelativeLocation(FVector(30.0f, 0.0f, 10.0f));
+	CarriedItemSprite->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
 
 	playerSprite = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("SpriteComp"));
 	playerSprite->SetupAttachment(RootComponent);
@@ -177,26 +178,34 @@ void AWaffleTrialsCharacter::UpdateCarriedItemSprite(){
 	CarriedItemSprite->SetSprite(ItemInfo->sprite);
 }
 
-void AWaffleTrialsCharacter::Tick(float DeltaTime){
+void AWaffleTrialsCharacter::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
-	float facing = 1.f;
-
 	const FVector vel = GetVelocity();
-	UPaperFlipbook* anim;
-	if (vel.SizeSquared2D() > 1.f)
-		anim = move;
-	else
-		anim = idle;
+	const float speedSq = vel.SizeSquared2D();
 
+	if (!isMoving && speedSq > 100.f)
+		isMoving = true;
+	else if (isMoving && speedSq < 25.f)
+		isMoving = false;
+
+	UPaperFlipbook* anim = isMoving ? move : idle;
 	if (playerSprite->GetFlipbook() != anim)
 		playerSprite->SetFlipbook(anim);
 
-	// flip left or right
-	if (vel.Y > 1.f)
+	// facing persists when velocity is near zero, so stopping doesnt snap them right
+	if (vel.Y > 20.f)
 		facing = 1.f;
-	else if (vel.Y < -1.f)
+	else if (vel.Y < -20.f)
 		facing = -1.f;
 
-	playerSprite->SetRelativeScale3D(FVector(facing, SpriteScale, SpriteScale) * 1.75);
+	if (facing == lastFacing)
+		return;
+
+	lastFacing = facing;
+	playerSprite->SetRelativeScale3D(FVector(facing * SpriteScale, SpriteScale, SpriteScale) * 1.75f);
+
+	if (GEngine) GEngine->AddOnScreenDebugMessage(1, 0.1f, FColor::White,
+		FString::Printf(TEXT("velY=%.1f facing=%.0f moving=%d anim=%s"),
+			vel.Y, facing, isMoving, *GetNameSafe(playerSprite->GetFlipbook())));
 }
