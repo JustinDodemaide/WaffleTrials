@@ -2,69 +2,73 @@
 
 #include "Station.h"
 #include "Components/TextRenderComponent.h"
-#include "PaperSprite.h"
 #include "Net/UnrealNetwork.h"
+#include "UObject/ConstructorHelpers.h"
 
-AStation::AStation()
-{
+AStation::AStation() {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
 
-	//CountText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("CountText"));
-	//CountText->SetHorizontalAlignment(EHTA_Center);
-	//CountText->SetWorldSize(80.f);
-	//CountText->SetupAttachment(Mesh);
-	//CountText->SetRelativeLocation(FVector(0.f, 0.f, 200.f));
+	/*
+	CountText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("CountText"));
+	CountText->SetHorizontalAlignment(EHTA_Center);
+	CountText->SetWorldSize(80.f);
+	CountText->SetupAttachment(Mesh);
+	CountText->SetRelativeLocation(FVector(0.f, 0.f, 200.f));
+	*/
 
-	indicator = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("indicator"));
-	indicator->SetupAttachment(Mesh);
-	indicator->SetRelativeLocation(FVector(0.f, 0.f, arrowHeight));
-	indicator->SetVisibility(false);
-	indicator->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	indicator->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
+	outlineMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("outlineMesh"));
+	outlineMesh->SetupAttachment(Mesh);
+	outlineMesh->SetRelativeScale3D(FVector(outlineScale));
+	outlineMesh->SetVisibility(false);
+	outlineMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	outlineMesh->SetCastShadow(false);
 
-	// i simply dont want to have to set the image for every station
-	static ConstructorHelpers::FObjectFinder<UPaperSprite> arrowFinder(
-		TEXT("/Script/Engine.Texture2D'/Game/meshes/arrow.arrow'"));
-	if (arrowFinder.Succeeded())
-		indicator->SetSprite(arrowFinder.Object);
+	Mesh->SetCustomDepthStencilValue(1);
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> outlineFinder(
+		TEXT("Material'/Game/meshes/highlight.highlight'"));
+
+	if (outlineFinder.Succeeded()) {
+		outlineMaterial = outlineFinder.Object;
+	}
 }
 
-void AStation::BeginPlay()
-{
+void AStation::BeginPlay() {
 	Super::BeginPlay();
 
-	if (!indicator)
-		return;
-	if (!arrowImage)
+	if (!outlineMesh || !Mesh)
 		return;
 
-	indicator->SetSprite(arrowImage);
+	outlineMesh->SetSkeletalMesh(Mesh->GetSkeletalMeshAsset());
+	outlineMesh->SetLeaderPoseComponent(Mesh);
+
+	if (!outlineMaterial)
+		return;
+
+	int32 count = Mesh->GetNumMaterials();
+	for (int32 i = 0; i < count; i++)
+		outlineMesh->SetMaterial(i, outlineMaterial);
 }
 
-void AStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
+void AStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
 	//DOREPLIFETIME(AStation, Count);
 }
 
-void AStation::Interact(APawn* Interactor)
-{
+void AStation::Interact(APawn* Interactor) {
 	if (!HasAuthority())
-	{
 		return;
-	}
 
 	//Count++;
 	//UpdateCount();
 }
 
 //void AStation::OnRep_Count() {
-//	UpdateCount();
+	//UpdateCount();
 //}
 
 //void AStation::UpdateCount() {
@@ -76,8 +80,11 @@ void AStation::Targeted(bool targeted) {
 }
 
 void AStation::SetHighlight(bool highlight) {
-	if (!indicator)
-		return;
+	if (outlineMesh)
+		outlineMesh->SetVisibility(highlight);
 
-	indicator->SetVisibility(highlight);
+	//if (highlight)
+	//	CountText->SetTextRenderColor(FColor::Green);
+	//else
+	//	CountText->SetTextRenderColor(FColor::White);
 }
