@@ -77,6 +77,8 @@ public:
 	bool useLAN = true;
 
 protected:
+	bool hosting = false;
+
 	IOnlineSessionPtr sessionInterface;
 	TSharedPtr<class FOnlineSessionSearch> sessionSearch;
 

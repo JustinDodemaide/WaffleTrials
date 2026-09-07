@@ -49,6 +49,11 @@ void UWGameInstance::hostGame() {
 	if (!sessionInterface.IsValid())
 		return;
 
+	if (hosting)
+		return;
+
+	hosting = true;
+
 	FNamedOnlineSession* stale = sessionInterface->GetNamedSession(SESSION_NAME);
 	if (!stale) {
 		createSession();
@@ -76,6 +81,8 @@ void UWGameInstance::createSession() {
 	settings.Set(KEY_GAMEID, GAMEID_VALUE, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
 	sessionInterface->CreateSession(0, SESSION_NAME, settings);
+
+	bool started = sessionInterface->CreateSession(0, SESSION_NAME, settings);
 }
 
 void UWGameInstance::onDestroyComplete(FName sessionName, bool success) {
@@ -92,6 +99,8 @@ void UWGameInstance::onCreateComplete(FName sessionName, bool success) {
 
 	if (!success)
 		return;
+
+	hosting = false;
 
 	GetWorld()->ServerTravel(lobbyMapName + TEXT("?listen"));
 }
