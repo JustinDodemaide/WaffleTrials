@@ -12,6 +12,9 @@ ACustomer::ACustomer() {
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("flipbook"));
 	RootComponent = flipbook;
 	flipbook->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	flipbook->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
+	flipbook->SetRelativeScale3D(FVector(2f));
 }
 
 void ACustomer::BeginPlay() {
