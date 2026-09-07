@@ -16,6 +16,7 @@ void AFridge::Interact(APawn* Interactor) {
 
 	player->SetHeldItem(EItem::RawBEC);
 	MulticastPlayAnim();
+	MulticastPlayInteractSound();
 }
 
 void AFridge::MulticastPlayAnim_Implementation() {

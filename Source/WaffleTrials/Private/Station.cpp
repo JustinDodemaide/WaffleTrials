@@ -4,6 +4,7 @@
 #include "Components/TextRenderComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
 
 AStation::AStation() {
 	PrimaryActorTick.bCanEverTick = false;
@@ -63,6 +64,8 @@ void AStation::Interact(APawn* Interactor) {
 	if (!HasAuthority())
 		return;
 
+	MulticastPlayInteractSound();
+
 	//Count++;
 	//UpdateCount();
 }
@@ -87,4 +90,11 @@ void AStation::SetHighlight(bool highlight) {
 	//	CountText->SetTextRenderColor(FColor::Green);
 	//else
 	//	CountText->SetTextRenderColor(FColor::White);
+}
+
+void AStation::MulticastPlayInteractSound_Implementation() {
+	if (!interactSound)
+		return;
+
+	UGameplayStatics::PlaySoundAtLocation(this, interactSound, GetActorLocation());
 }

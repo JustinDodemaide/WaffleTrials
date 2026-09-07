@@ -16,6 +16,7 @@ void ABagelCase::Interact(APawn* Interactor) {
 
 	player->SetHeldItem(EItem::PreppedBEC);
 	MulticastPlayAnim();
+	MulticastPlayInteractSound();
 }
 
 void ABagelCase::MulticastPlayAnim_Implementation() {

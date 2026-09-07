@@ -17,6 +17,7 @@ void ADonutCase::Interact(APawn* Interactor) {
 
 	player->SetHeldItem(EItem::Donut);
 	MulticastPlayAnim();
+	MulticastPlayInteractSound();
 }
 
 void ADonutCase::MulticastPlayAnim_Implementation() {

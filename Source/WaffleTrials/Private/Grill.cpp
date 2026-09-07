@@ -49,6 +49,7 @@ void AGrill::Interact(APawn* Interactor)
         player->SetHeldItem(EItem::None);
         state = EGrillState::Cooking;
         updateVisuals();
+        MulticastPlayInteractSound();
         GetWorldTimerManager().SetTimer(timer, this, &AGrill::timeout, 5.0f, false);
         break;
 
@@ -59,6 +60,7 @@ void AGrill::Interact(APawn* Interactor)
         player->SetHeldItem(EItem::CookedBEC);
         state = EGrillState::Empty;
         updateVisuals();
+        MulticastPlayInteractSound();
         break;
 
     case EGrillState::Burnt:

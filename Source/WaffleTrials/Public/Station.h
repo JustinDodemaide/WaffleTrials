@@ -21,6 +21,12 @@ public:
 	virtual void BeginPlay() override;
 
 protected:
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastPlayInteractSound();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Audio")
+	TObjectPtr<class USoundBase> interactSound;
+
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<USkeletalMeshComponent> outlineMesh;
 

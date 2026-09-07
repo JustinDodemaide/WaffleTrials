@@ -39,6 +39,7 @@ void ACoffeeMachine::Interact(APawn* Interactor) {
 		return;
 
 	player->SetHeldItem(EItem::Coffee);
+	MulticastPlayInteractSound();
 
 	state = ECoffeeMachineState::NotReady;
 	GetWorldTimerManager().SetTimer(

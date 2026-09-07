@@ -53,6 +53,7 @@ void AHeatLamp::Interact(APawn* Interactor) {
 	}
 
 	updateVisuals();
+	MulticastPlayInteractSound();
 }
 
 void AHeatLamp::stateChanged() {

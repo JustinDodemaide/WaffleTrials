@@ -34,8 +34,7 @@ void AWaffleMaker::BeginPlay(){
     updateVisuals();
 }
 
-void AWaffleMaker::Interact(APawn* Interactor)
-{
+void AWaffleMaker::Interact(APawn* Interactor){
     if (!HasAuthority()) return;
 
     AWaffleTrialsCharacter* player = Cast<AWaffleTrialsCharacter>(Interactor);
@@ -57,6 +56,7 @@ void AWaffleMaker::Interact(APawn* Interactor)
         player->SetHeldItem(EItem::Waffle);
         state = EWaffleMakerState::Empty;
         updateVisuals();
+        MulticastPlayInteractSound();
         break;
 
     case EWaffleMakerState::Burnt:

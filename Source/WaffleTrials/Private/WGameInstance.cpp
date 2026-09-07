@@ -6,6 +6,7 @@
 #include "WaffleTrials.h"
 #include "Online/OnlineSessionNames.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 static const FName SESSION_NAME = TEXT("WaffleSession");
 static const FName KEY_GAMEID = TEXT("WAFFLETRIALS_GAMEID");
