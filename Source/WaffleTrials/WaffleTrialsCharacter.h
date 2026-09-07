@@ -26,8 +26,14 @@ UCLASS(abstract)
 class AWaffleTrialsCharacter : public ACharacter
 {
 	GENERATED_BODY()
-	
+
 protected:
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	TObjectPtr<UPaperSpriteComponent> playerIndicator;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
+	TObjectPtr<class UPaperSprite> indicatorImage;
+
 	bool isMoving = false;
 	float facing = 1.f;
 	float lastFacing = 1.f;
@@ -59,6 +65,7 @@ public:
 	AWaffleTrialsCharacter();	
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void BeginPlay() override;
 
 protected:
 

@@ -14,7 +14,7 @@ ACustomer::ACustomer() {
 	flipbook->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	flipbook->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
-	flipbook->SetRelativeScale3D(FVector(2f));
+	flipbook->SetRelativeScale3D(FVector(2.0f));
 }
 
 void ACustomer::BeginPlay() {

@@ -64,6 +64,13 @@ AWaffleTrialsCharacter::AWaffleTrialsCharacter()
 	// stop them from climbing over the counter
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 	GetCharacterMovement()->MaxStepHeight = 0.f;
+
+	playerIndicator = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("playerIndicator"));
+	playerIndicator->SetupAttachment(RootComponent);
+	playerIndicator->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	playerIndicator->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
+	playerIndicator->SetRelativeLocation(FVector(0.f, 0.f, 60.f));
+	playerIndicator->SetVisibility(false);
 }
 
 void AWaffleTrialsCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{
@@ -208,4 +215,17 @@ void AWaffleTrialsCharacter::Tick(float DeltaTime) {
 	if (GEngine) GEngine->AddOnScreenDebugMessage(1, 0.1f, FColor::White,
 		FString::Printf(TEXT("velY=%.1f facing=%.0f moving=%d anim=%s"),
 			vel.Y, facing, isMoving, *GetNameSafe(playerSprite->GetFlipbook())));
+}
+
+void AWaffleTrialsCharacter::BeginPlay() {
+	Super::BeginPlay();
+
+	if (!playerIndicator)
+		return;
+
+	if (indicatorImage)
+		playerIndicator->SetSprite(indicatorImage);
+
+	// only the player who owns this pawn sees their own marker
+	playerIndicator->SetVisibility(IsLocallyControlled());
 }
