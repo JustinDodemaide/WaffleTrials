@@ -22,6 +22,22 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
+	UPROPERTY(VisibleAnywhere, Category = "Customer")
+	TObjectPtr<USceneComponent> customerSpawnPoint;
+
+	UPROPERTY(VisibleAnywhere, Category = "Customer")
+	TObjectPtr<USceneComponent> customerSeatPoint;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Customer")
+	TSubclassOf<class ACustomer> customerClass;
+
+	UPROPERTY()
+	TObjectPtr<class ACustomer> customer;
+
+	bool hadOrder = false;
+
+	void updateCustomer();
+
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UStaticMeshComponent> Mesh;
 

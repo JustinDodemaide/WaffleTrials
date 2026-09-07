@@ -8,6 +8,7 @@
 #include "Engine/DataTable.h"
 #include "Kismet/GameplayStatics.h"
 #include "WaffleTrials.h"
+#include "Customer.h"
 
 AOrderReceptacle::AOrderReceptacle(){
 	PrimaryActorTick.bCanEverTick = true;
@@ -25,6 +26,11 @@ AOrderReceptacle::AOrderReceptacle(){
 
 	progressBar = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("progressBar"));
 	progressBar->SetupAttachment(spriteRoot);
+
+	customerSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("customerSpawnPoint"));
+	customerSpawnPoint->SetupAttachment(Mesh);
+	customerSeatPoint = CreateDefaultSubobject<USceneComponent>(TEXT("customerSeatPoint"));
+	customerSeatPoint->SetupAttachment(Mesh);
 }
 
 void AOrderReceptacle::BeginPlay(){
@@ -44,6 +50,13 @@ void AOrderReceptacle::BeginPlay(){
 	updateVisuals();
 
 	progressBarMaterial = progressBar->CreateAndSetMaterialInstanceDynamic(0);
+
+	if (customerClass) {
+		FActorSpawnParameters params;
+		params.Owner = this;
+		customer = GetWorld()->SpawnActor<ACustomer>(customerClass,
+			customerSpawnPoint->GetComponentLocation(), FRotator::ZeroRotator, params);
+	}
 }
 
 void AOrderReceptacle::Tick(float DeltaTime){
@@ -100,6 +113,8 @@ void AOrderReceptacle::updateVisuals()
 		sprites[i]->SetSprite(itemInfo->sprite);
 		sprites[i]->SetVisibility(true);
 	}
+
+	updateCustomer();
 }
 
 void AOrderReceptacle::hideSprites(){
@@ -143,4 +158,31 @@ void AOrderReceptacle::EndPlay(const EEndPlayReason::Type EndPlayReason) {
 	progressBar->SetVisibility(false);
 
 	Super::EndPlay(EndPlayReason);
+}
+
+void AOrderReceptacle::updateCustomer() {
+	if (!customer)
+		return;
+
+	AWaffleTrialsGameState* gameState = GetWorld()->GetGameState<AWaffleTrialsGameState>();
+	if (!gameState)
+		return;
+
+	// an order exists if any sprite slot has something in it
+	bool hasOrder = gameState->getItem(orderSlotID, 0) != EItem::None
+		|| gameState->getItem(orderSlotID, 1) != EItem::None
+		|| gameState->getItem(orderSlotID, 2) != EItem::None;
+
+	if (hasOrder == hadOrder)
+		return;
+
+	hadOrder = hasOrder;
+
+	if (hasOrder) {
+		customer->arrive(customerSpawnPoint->GetComponentLocation(),
+			customerSeatPoint->GetComponentLocation());
+		return;
+	}
+
+	customer->leave();
 }
