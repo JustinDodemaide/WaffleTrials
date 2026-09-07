@@ -138,13 +138,6 @@ void AOrderReceptacle::Interact(APawn* Interactor){
 	if (!gameState)
 		return;
 
-	//UE_LOG(LogWaffleTrials, Warning, TEXT("HHHHHHHHHHHHHHHHHHHHHHHHHHHH"));
-	if (gameState->attemptSubmitItem(orderSlotID, playerItem)) {
-		player->SetHeldItem(EItem::None);
-		//UE_LOG(LogWaffleTrials, Warning, TEXT("XXXXXXXXXXXXXXXXXXXX"));
-
-	}
-
 	if (gameState->attemptSubmitItem(orderSlotID, playerItem)) {
 		player->SetHeldItem(EItem::None);
 		MulticastPlayAnim();

@@ -81,8 +81,6 @@ void UWGameInstance::createSession() {
 
 	settings.Set(KEY_GAMEID, GAMEID_VALUE, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
-	sessionInterface->CreateSession(0, SESSION_NAME, settings);
-
 	bool started = sessionInterface->CreateSession(0, SESSION_NAME, settings);
 }
 

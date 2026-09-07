@@ -28,6 +28,9 @@ class AWaffleTrialsCharacter : public ACharacter
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Sprite")
+	float playerSpriteScale = 1.f;
+
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UPaperSpriteComponent> playerIndicator;
 

@@ -28,7 +28,7 @@ AWaffleTrialsCharacter::AWaffleTrialsCharacter()
 	Interactor = CreateDefaultSubobject<UInteractorComponent>(TEXT("Interactor"));
 
 	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+	//GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
@@ -69,7 +69,7 @@ AWaffleTrialsCharacter::AWaffleTrialsCharacter()
 	playerIndicator->SetupAttachment(RootComponent);
 	playerIndicator->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	playerIndicator->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
-	playerIndicator->SetRelativeLocation(FVector(0.f, 0.f, 60.f));
+	playerIndicator->SetRelativeLocation(FVector(0.f, 0.f, 40.f));
 	playerIndicator->SetVisibility(false);
 }
 
@@ -177,7 +177,7 @@ void AWaffleTrialsCharacter::UpdateCarriedItemSprite(){
 
 	FItemData* ItemInfo = GameInstance->ItemDataTable->FindRow<FItemData>(RowName, TEXT("looking up sprite"));
 	if (!ItemInfo){
-		UE_LOG(LogWaffleTrials, Error, TEXT("item data not found in table :/"), *ItemName);
+		UE_LOG(LogWaffleTrials, Error, TEXT("item data not found in table :/"));
 		CarriedItemSprite->SetSprite(nullptr);
 		return;
 	}
@@ -210,11 +210,11 @@ void AWaffleTrialsCharacter::Tick(float DeltaTime) {
 		return;
 
 	lastFacing = facing;
-	playerSprite->SetRelativeScale3D(FVector(facing * SpriteScale, SpriteScale, SpriteScale) * 1.75f);
+	playerSprite->SetRelativeScale3D(FVector(facing * playerSpriteScale, playerSpriteScale, playerSpriteScale) * 1.75f);
 
-	if (GEngine) GEngine->AddOnScreenDebugMessage(1, 0.1f, FColor::White,
-		FString::Printf(TEXT("velY=%.1f facing=%.0f moving=%d anim=%s"),
-			vel.Y, facing, isMoving, *GetNameSafe(playerSprite->GetFlipbook())));
+	//if (GEngine) GEngine->AddOnScreenDebugMessage(1, 0.1f, FColor::White,
+	//	FString::Printf(TEXT("velY=%.1f facing=%.0f moving=%d anim=%s"),
+	//		vel.Y, facing, isMoving, *GetNameSafe(playerSprite->GetFlipbook())));
 }
 
 void AWaffleTrialsCharacter::BeginPlay() {
